@@ -186,9 +186,7 @@ class Warehouse(object):
         # partitions created in the database.
         s = self.database.session
         try:
-            ds = s.query(Dataset).filter(
-                Dataset.id_ == self.vid).order_by(
-                Dataset.revision.desc()).one()
+            s.query(Dataset).filter(Dataset.id_ == self.vid).order_by(Dataset.revision.desc()).one()
         except NoResultFound:
             from ..identity import Identity
 
@@ -200,8 +198,7 @@ class Warehouse(object):
                     dataset=self.vid))
 
             ds = Dataset(
-                data=dict(
-                    dsn=self.dsn),
+                data=dict(dsn=self.dsn),
                 creator='ambry',
                 fqname=ident.fqname,
                 **ident.dict)
@@ -438,7 +435,7 @@ class Warehouse(object):
 
         assert identity.is_partition
 
-        p_vid = self._to_vid(identity)
+        self._to_vid(identity)
         d_vid = self._partition_to_dataset_vid(identity)
 
         meta, table = Schema.get_table_meta_from_db(self.library.database,
@@ -639,10 +636,7 @@ class Warehouse(object):
                     tables, p = self.install_partition(
                         dataset.partition.vid, tables)
                 except NotFoundError as e:
-                    self.logger.error(
-                        "Failed to install partition {}: {}".format(
-                            dataset.partition,
-                            e))
+                    self.logger.error("Failed to install partition {}: {}".format(dataset.partition, e))
                     continue
 
                 installed_tables += tables
@@ -670,7 +664,6 @@ class Warehouse(object):
                 self.install_material_view(name, sql, force, data)
 
             elif command == 'view':
-
                 name, sql, data, force = command_set
 
                 self.install_view(name, sql, data)
@@ -685,9 +678,6 @@ class Warehouse(object):
         """Install the partitions and views specified in a manifest file."""
 
         from datetime import datetime
-        import os
-
-        errors = []
 
         # Mark all of the files associated with the manifest, so if they aren't in the manifest
         # we can remove them.
@@ -757,7 +747,8 @@ class Warehouse(object):
             if source_table_name not in tables_in_partition:
                 continue
             try:
-                table, meta = self.create_table(p, source_table_name)
+                # table, meta = self.create_table(p, source_table_name)
+                self.create_table(p, source_table_name)
             except Exception as e:
                 print e
                 raise
@@ -820,10 +811,7 @@ class Warehouse(object):
                 installed_tables.append(w_table.name)
 
             except OperationalError as e:
-                self.logger.error(
-                    "Failed to install table '{}': {}".format(
-                        source_table_name,
-                        e))
+                self.logger.error("Failed to install table '{}': {}".format(source_table_name, e))
                 raise
 
         self.library.database.mark_partition_installed(p_vid)
@@ -1140,16 +1128,12 @@ class Warehouse(object):
 
             self.build_schema(t)
 
-        except Exception as e:
-
+        except Exception:
             self.logger.error("Failed to install view: \n{}".format(sql))
-
             raise
 
         except OperationalError:
-
             self.logger.error("Failed to execute: {} ".format(sql))
-
             raise
 
     def install_table_alias(self, table_name, alias, proto_vid=None):
@@ -1464,25 +1448,25 @@ class Warehouse(object):
 
         return table, meta
 
-        def create_index(self, name, table, columns):
-
-            from sqlalchemy.exc import OperationalError, ProgrammingError
-
-            sql = 'CREATE INDEX {} ON "{}" ({})'.format(
-                name,
-                table,
-                ','.join(columns))
-
-            try:
-                self.database.connection.execute(sql)
-                self.logger.info('create_index {}'.format(name))
-            except (OperationalError, ProgrammingError) as e:
-
-                if 'exists' not in str(e).lower():
-                    raise
-
-                self.logger.info('index_exists {}'.format(name))
-                # Ignore if it already exists.
+        # def create_index(self, name, table, columns):
+        #
+        #     from sqlalchemy.exc import OperationalError, ProgrammingError
+        #
+        #     sql = 'CREATE INDEX {} ON "{}" ({})'.format(
+        #         name,
+        #         table,
+        #         ','.join(columns))
+        #
+        #     try:
+        #         self.database.connection.execute(sql)
+        #         self.logger.info('create_index {}'.format(name))
+        #     except (OperationalError, ProgrammingError) as e:
+        #
+        #         if 'exists' not in str(e).lower():
+        #             raise
+        #
+        #         self.logger.info('index_exists {}'.format(name))
+        #         # Ignore if it already exists.
 
     def _to_vid(self, partition):
         from ..partition import PartitionBase

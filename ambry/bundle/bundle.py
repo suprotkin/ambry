@@ -66,10 +66,7 @@ class Bundle(object):
                 self._database.session.commit()
                 self._database.close()
             except NotFoundError as e:
-                self.logger.debug(
-                    "Error closing {}: {}".format(
-                        self._database.path,
-                        e))
+                self.logger.debug("Error closing {}: {}".format(self._database.path, e))
             except DatabaseMissingError:
                 pass  # It was never really open
 
@@ -226,15 +223,8 @@ class Bundle(object):
             return t.format(**d)
         except KeyError as e:
             import json
-            self.error(
-                "Failed to substitute template in {}. Key Error: {}".format(
-                    self.identity,
-                    e))
-            self.error(
-                "Available keys are:\n {}".format(
-                    json.dumps(
-                        d,
-                        indent=4)))
+            self.error("Failed to substitute template in {}. Key Error: {}".format(self.identity, e))
+            self.error("Available keys are:\n {}".format(json.dumps(d, indent=4)))
             return t
 
     @property
@@ -685,7 +675,7 @@ class BuildBundle(Bundle):
                 "No dataset record found. Probably not a bundle (d): '{}'" .format(
                     self.path))
 
-        except Exception as e:
+        except Exception:
             from ..util import get_logger
             raise
 
@@ -695,7 +685,7 @@ class BuildBundle(Bundle):
         try:
             cache = self.filesystem.get_cache_by_name('build')
             return cache.cache_dir
-        except ConfigurationError as e:
+        except ConfigurationError:
             return self.filesystem.path(self.filesystem.BUILD_DIR)
 
     @property
@@ -762,10 +752,7 @@ class BuildBundle(Bundle):
                 idents = self.metadata.identity.items()
 
             except KeyError as e:
-                raise ConfigurationError(
-                    "Bad bundle config in: {}: {} ".format(
-                        self.bundle_dir,
-                        e))
+                raise ConfigurationError("Bad bundle config in: {}: {} ".format(self.bundle_dir, e))
             except AttributeError:
                 raise AttributeError(
                     "Failed to get required sections of config.\nconfig_source = {}\n".format(self.config.source_ref))
@@ -829,18 +816,17 @@ class BuildBundle(Bundle):
         # configuration
 
         if rewrite_database:
-            odep_set = False
+            # odep_set = False
             if self.database.exists():
 
                 if self.config.build.get('dependencies'):
                     for k, v in self.config.build.get('dependencies').items():
                         self.set_value('odep', k, v)
-                        odep_set = True
+                        # odep_set = True
 
                 self.database.rewrite_dataset()
 
     def rewrite_readme(self):
-
         tf = self.filesystem.path(self.README_FILE_TEMPLATE)
         if os.path.exists(tf):
             with open(self.filesystem.path(tf)) as fi:
@@ -1146,7 +1132,7 @@ class BuildBundle(Bundle):
                         self.identity.on.revision))
                 return False
 
-        except Exception as e:
+        except Exception:
             raise
 
         return True
@@ -1294,7 +1280,7 @@ class BuildBundle(Bundle):
                 self.log("---- Done Preparing ----")
             else:
                 self.log("---- Prepare exited with failure ----")
-                r = False
+                # r = False
         else:
             self.log("---- Skipping prepare ---- ")
 
@@ -1365,7 +1351,7 @@ class BuildBundle(Bundle):
             if f:
                 try:
                     f()
-                except AssertionError as e:
+                except AssertionError:
                     import traceback
                     import sys
 
@@ -1739,7 +1725,7 @@ class BuildBundle(Bundle):
     def install(self, library_name=None, delete=False, force=True):
         """Install the bundle and all partitions in the default library."""
 
-        force = self.run_args.get('force', force)
+        # force = self.run_args.get('force', force)
 
         if not self.is_built:
             self.error("Bundle hasn't been successfully built")

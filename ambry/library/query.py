@@ -433,8 +433,8 @@ class Resolver(object):
             else:
                 return c == v
 
-        has_partition = False
-        has_where = False
+        # has_partition = False
+        # has_where = False
 
         if isinstance(query_command, Identity):
             raise NotImplementedError()
@@ -467,7 +467,7 @@ class Resolver(object):
                     k = 'id_'
                 try:
                     query = query.filter(like_or_eq(getattr(Dataset, k), v))
-                except AttributeError as e:
+                except AttributeError:
                     # Dataset doesn't have the attribute, so ignore it.
                     pass
 

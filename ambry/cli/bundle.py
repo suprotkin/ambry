@@ -523,7 +523,6 @@ def bundle_info(args, b, st, rc):
                             10))
                     break
 
-        deps = None
         if b.metadata.dependencies:
             # For source bundles
             deps = b.metadata.dependencies.items()
@@ -545,16 +544,10 @@ def bundle_info(args, b, st, rc):
             for p in b.partitions.all:
                 b.log("--- Partition {}: ".format(p.identity))
                 if args.partitions:
-                    d = p.record.data
+                    p.record.data
 
-                    def bl(k, v):
-                        b.log(
-                            indent +
-                            "{:7s}: {}".format(
-                                k,
-                                p.record.data.get(
-                                    v,
-                                    '')))
+                    def bl(key, value):
+                        b.log(indent + "{:7s}: {}".format(key, p.record.data.get(value, '')))
 
                     b.log(indent + "Details: ".format(p.identity))
                     bl('g cov', 'geo_coverage')
@@ -739,7 +732,7 @@ def bundle_config(args, b, st, rc):
         b.close()
 
         # Now, update this version to be one more.
-        ident = b.identity
+        # ident = b.identity
 
         identity.on.revision = prior_version + 1
 
@@ -786,12 +779,9 @@ def bundle_config(args, b, st, rc):
                 d['id'] = str(ns.next())
                 prt("Got number from number server: {}".format(d['id']))
             except HTTPError as e:
-                warn(
-                    "Failed to get number from number server. Config = {}: {}".format(
-                        nsconfig,
-                        e.message))
-                warn(
-                    "Using self-generated number. There is no problem with this, but they are longer than centrally generated numbers.")
+                warn("Failed to get number from number server. Config = {}: {}".format(nsconfig, e.message))
+                warn("Using self-generated number. There is no problem with this, "
+                     "but they are longer than centrally generated numbers.")
                 d['id'] = str(DatasetNumber())
 
         ident = Identity.from_dict(d)
@@ -810,7 +800,6 @@ def bundle_config(args, b, st, rc):
 
 
 def bundle_config_scrape(args, b, st, rc):
-
     from bs4 import BeautifulSoup
     import urllib2
     import urlparse
@@ -853,7 +842,7 @@ def bundle_config_scrape(args, b, st, rc):
         if 'javascript' in url:
             continue
 
-        orig_url = url
+        # orig_url = url
 
         if url.startswith('http'):
             pass

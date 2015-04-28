@@ -250,7 +250,6 @@ def combine_envelopes(geos, use_bb=True, use_distance=False):
     while True:
         i, new_geos = _combine_envelopes(geos, use_bb, use_distance)
         old = len(geos)
-        geos = None
         geos = [g.Clone() for g in new_geos]
         loops += 1
         print "{}) {} reductions. {} old, {} new".format(loops, i, old,
@@ -504,7 +503,7 @@ def get_shapefile_geometry_types(shape_file):
     layer = shapes.GetLayer(0)
 
     types = set()
-    type_ = None
+    # type_ = None
 
     limit = 20000
     count = layer.GetFeatureCount()
@@ -589,13 +588,11 @@ def segment_points(
     if query_template is None:
         # Took the 'empty_clause' out because it is really slow if there is no
         # index.
-        empty_clause = "AND ({target_col} IS NULL OR {target_col} = 'NONE' " \
-                       "OR {target_col} = '-')"
+        # empty_clause = "AND ({target_col} IS NULL OR {target_col} = 'NONE' OR {target_col} = '-')"
         query_template = "SELECT * FROM {table_name} WHERE {bb_clause}  "
 
     if places_query is None:
-        places_query = "SELECT *, AsText(geometry) AS wkt FROM {} " \
-                       "ORDER BY area ASC".format(areas.identity.table)
+        places_query = "SELECT *, AsText(geometry) AS wkt FROM {} ORDER BY area ASC".format(areas.identity.table)
 
     if bb_clause is None:
         if bb_type == 'll':

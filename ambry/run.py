@@ -481,7 +481,7 @@ def mp_run(mp_run_args):
 
     try:
 
-        bundle_file = sys.argv[1]
+        # bundle_file = sys.argv[1]
 
         if not os.path.exists(os.path.join(os.getcwd(), 'bundle.yaml')):
             print >> sys.stderr, "ERROR: Current directory '{}' does not have a bundle.yaml file, so it isn't a bundle file. Did you mean to run 'cli'?".format(

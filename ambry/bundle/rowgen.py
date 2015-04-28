@@ -26,14 +26,13 @@ class RowGenerator(object):
 
     put_row = None  # A row that was put back to be iterated over again.
 
-    def __init__(self, file, data_start_line=None, data_end_line=None,
-                 header_lines=None, header_comment_lines=None,
-                 header_mangler=None):
+    def __init__(self, file_name, data_start_line=None, data_end_line=None, header_lines=None,
+                 header_comment_lines=None, header_mangler=None):
         """
 
         """
 
-        self.file_name = file
+        self.file_name = file_name
 
         if data_start_line:
             self.data_start_line = data_start_line
@@ -54,8 +53,7 @@ class RowGenerator(object):
         self._header = None
         self._unmangled_header = None
 
-    def add_intuition(self, data_start_line=None, data_end_line=None,
-                      header_lines=None, header_comment_lines=None):
+    def add_intuition(self, data_start_line=None, data_end_line=None, header_lines=None, header_comment_lines=None):
 
         if data_start_line:
             self.data_start_line = data_start_line
@@ -210,12 +208,12 @@ class RowGenerator(object):
 class DelimitedRowGenerator(RowGenerator):
     delimiter = None
 
-    def __init__(self, file, data_start_line=None, data_end_line=None,
+    def __init__(self, file_name, data_start_line=None, data_end_line=None,
                  header_lines=None,
                  header_comment_lines=None, header_mangler=None, delimiter=','):
 
         super(DelimitedRowGenerator, self).__init__(
-            file, data_start_line=data_start_line, data_end_line=data_end_line, header_lines=header_lines,
+            file_name, data_start_line=data_start_line, data_end_line=data_end_line, header_lines=header_lines,
             header_comment_lines=header_comment_lines, header_mangler=header_mangler)
 
         self.delimiter = delimiter
@@ -243,11 +241,11 @@ class DelimitedRowGenerator(RowGenerator):
 
 
 class ExcelRowGenerator(RowGenerator):
-    def __init__(self, file, data_start_line=None, data_end_line=None,
+    def __init__(self, file_name, data_start_line=None, data_end_line=None,
                  header_lines=None,
                  header_comment_lines=None, header_mangler=None, segment=0):
 
-        super(ExcelRowGenerator, self).__init__(file, data_start_line,
+        super(ExcelRowGenerator, self).__init__(file_name, data_start_line,
                                                 data_end_line, header_lines,
                                                 header_comment_lines,
                                                 header_mangler)
@@ -265,7 +263,8 @@ class ExcelRowGenerator(RowGenerator):
             from zipfile import ZipFile
             # Usually b/c the .xls file is XML, but not zipped.
 
-            fn = self.file_name.replace('.xls', '.xml')
+            # fn = self.file_name.replace('.xls', '.xml')
+            self.file_name.replace('.xls', '.xml')
 
             wb = open_workbook(self.file_name)
 
@@ -326,8 +325,7 @@ class RowSpecIntuiter(object):
 
             self.lengths[lng] += 1
 
-        self.mid_length = mid = (min(self.lengths.keys()) + max(
-            self.lengths.keys())) / 2
+        self.mid_length = (min(self.lengths.keys()) + max(self.lengths.keys())) / 2
 
     def non_nulls(self, row):
         """Return the non-empty values from a row"""
@@ -342,7 +340,7 @@ class RowSpecIntuiter(object):
     def is_header_line(self, i, row):
         """Return true if a row is part of the header"""
 
-        return (not self.header and len(self.non_nulls(row)) > self.mid_length)
+        return not self.header and len(self.non_nulls(row)) > self.mid_length
 
     def is_header_comment_line(self, i, row):
         """Return true if a line is a header comment"""

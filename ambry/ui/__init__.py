@@ -108,7 +108,6 @@ def renderer(content_type='html'):
 def write_config(config):
     import yaml
 
-    done = False
     for path in config_paths:
         try:
 

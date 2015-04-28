@@ -124,7 +124,7 @@ class Partitions(object):
             for op in q.all():
                 try:
                     partitions.append(self.partition(op))
-                except KeyError as e:  # Unknown partition type, usually 'hdf'
+                except KeyError:  # Unknown partition type, usually 'hdf'
                     raise
 
             return partitions
@@ -484,22 +484,17 @@ class Partitions(object):
             ppn, PartialPartitionName), "Expected PartialPartitionName, got {}".format(
             type(ppn))
 
-        with self.bundle.session as s:
+        with self.bundle.session:  # as s:
             op = self._new_orm_partition(ppn, tables=tables, data=data)
-
             fqname = op.fqname
 
         partition = self.find(PartitionNameQuery(fqname=fqname))
 
         try:
-            assert bool(
-                partition), '''Failed to find partition that was just created'''
+            assert bool(partition), '''Failed to find partition that was just created'''
         except AssertionError:
-            self.bundle.error(
-                "Failed to get partition for: created={}, fqname={}, database={} " .format(
-                    ppn,
-                    fqname,
-                    self.bundle.database.dsn))
+            self.bundle.error("Failed to get partition for: created={}, fqname={}, database={} "
+                              .format(ppn, fqname, self.bundle.database.dsn))
             raise
 
         if create:

@@ -52,16 +52,10 @@ class SourceTree(object):
             try:
                 bundle = self.bundle(file_.path)
             except ImportError as e:
-                self.logger.info(
-                    "Failed to load bundle from {}: {}".format(
-                        file_.path,
-                        e))
+                self.logger.info("Failed to load bundle from {}: {}".format(file_.path, e))
                 continue
             except Exception as e:
-                self.logger.info(
-                    "Failed to load bundle from {}: {}".format(
-                        file_.path,
-                        e))
+                self.logger.info("Failed to load bundle from {}: {}".format(file_.path, e))
                 continue
 
             if ck not in datasets:
@@ -131,7 +125,7 @@ class SourceTree(object):
                 for v in source.data['dependencies'].values():
                     try:
                         ident = l.resolve(v, location=None, use_remote=False)
-                    except Exception as e:
+                    except Exception:
                         ident = None
 
                     if not ident:
@@ -241,15 +235,11 @@ class SourceTree(object):
         for ident in self._dir_list().values():
             try:
                 self.sync_bundle(ident.bundle_path, ident)
-            except Exception as e:
+            except Exception:
                 raise
-                self.logger.error(
-                    "Failed to sync: bundle_path={} : {} ".format(
-                        ident.bundle_path,
-                        e.message))
+                self.logger.error("Failed to sync: bundle_path={} : {} ".format(ident.bundle_path, e.message))
 
     def _bundle_data(self, ident, bundle):
-
         try:
             dependencies = bundle.metadata.dependencies
         except:
@@ -396,21 +386,8 @@ class SourceTree(object):
 
         return BuildBundle(root)
 
-    def new_bundle(
-            self,
-            rc,
-            repo_dir,
-            source,
-            dataset,
-            type=None,
-            subset=None,
-            bspace=None,
-            btime=None,
-            variation=None,
-            revision=1,
-            throw=True,
-            examples=True,
-            ns_key=None):
+    def new_bundle(self, rc, repo_dir, source, dataset, type=None, subset=None, bspace=None, btime=None, variation=None,
+            revision=1, throw=True, examples=True, ns_key=None):
 
         from ..source.repository import new_repository
         from ..identity import DatasetNumber, Identity
@@ -429,7 +406,7 @@ class SourceTree(object):
             raise IOError(
                 "Repository directory '{}' does not exist".format(repo_dir))
 
-        l = self.library
+        self.library
 
         nsconfig = rc.group('numbers')
 
@@ -475,17 +452,15 @@ class SourceTree(object):
                     "Got number from number server: {}".format(
                         d['id']))
         except HTTPError as e:
-            self.logger.warn(
-                "Failed to get number from number server: {}".format(
-                    e.message))
-            self.logger.warn(
-                "Using self-generated number. There is no problem with this, but they are longer than centrally generated numbers.")
+            self.logger.warn("Failed to get number from number server: {}".format(e.message))
+            self.logger.warn("Using self-generated number. There is no problem with this, "
+                             "but they are longer than centrally generated numbers.")
             d['id'] = str(DatasetNumber())
 
         ident = Identity.from_dict(d)
 
         try:
-            ambry_account = rc.group('accounts').get('ambry', {})
+            ambry_account = rc.group(name='accounts').get('ambry', {})
         except:
             ambry_account = None
 
@@ -551,15 +526,9 @@ class SourceTree(object):
             from ..util import rm_rf
 
             rm_rf(bundle_dir)
-            raise SyncError(
-                "Failed to sync bundle at {} ('{}') . Bundle deleted".format(
-                    bundle_dir,
-                    e.message))
+            raise SyncError("Failed to sync bundle at {} ('{}') . Bundle deleted".format(bundle_dir, e.message))
         else:
-            self.logger.info(
-                "CREATED: {}, {}".format(
-                    ident.fqname,
-                    bundle_dir))
+            self.logger.info("CREATED: {}, {}".format(ident.fqname, bundle_dir))
 
         return bundle_dir
 
@@ -591,10 +560,10 @@ class SourceTreeLibrary(object):
         import os.path
         from ..util import md5_for_file
 
-        hash = None
+        # hash = None
 
-        if os.path.is_file(path):
-            hash = md5_for_file(path)
+        # if os.path.is_file(path):
+        #     hash = md5_for_file(path)
 
         self._library.database.add_file(
             path=path,
@@ -621,20 +590,13 @@ class SourceTreeWatcher(object):
         from watchdog.observers import Observer
         from watchdog.events import PatternMatchingEventHandler
 
-        library = self.library
+        # library = self.library
         this = self
 
         class EventHandler(PatternMatchingEventHandler):
 
             def __init__(self):
-                super(EventHandler, self).__init__(
-                    patterns=['*/bundle.yaml',
-                              '*/bundle.py',
-                              '*/.git',
-                              '*/build/*.db'
-
-                              ]
-                )
+                super(EventHandler, self).__init__(patterns=['*/bundle.yaml', '*/bundle.py', '*/.git', '*/build/*.db'])
 
             def on_any_event(self, event):
                 print event

@@ -191,30 +191,23 @@ class Files(object):
         # Sqlalchemy doesn't automatically rollback on exceptions, and you
         # can't re-try the commit until you roll back.
         try:
-
             s.add(f)
             if commit:
                 self.db.commit()
 
-        except IntegrityError as e:
-
+        except IntegrityError:
             s.rollback()
-
             s.merge(f)
+
             try:
                 self.db.commit()
-            except IntegrityError as e:
+            except IntegrityError:
                 s.rollback()
                 raise
 
         self.db._mark_update()
 
-    def install_bundle_file(
-            self,
-            bundle,
-            cache,
-            commit=True,
-            state='installed'):
+    def install_bundle_file(self, bundle, cache, commit=True, state='installed'):
         """Mark a bundle file as having been installed in the library."""
 
         ident = bundle.identity
@@ -233,12 +226,7 @@ class Files(object):
             data=None,
             source_url=None)
 
-    def install_partition_file(
-            self,
-            partition,
-            cache,
-            commit=True,
-            state='installed'):
+    def install_partition_file(self, partition, cache, commit=True, state='installed'):
         """Mark a partition file as having been installed in the library."""
 
         ident = partition.identity
@@ -307,9 +295,7 @@ class Files(object):
             priority=None,
             source_url=None, )
 
-    def install_data_store(self, w,
-                           name=None, title=None, summary=None,
-                           cache=None, url=None, commit=True):
+    def install_data_store(self, w, name=None, title=None, summary=None, cache=None, url=None, commit=True):
         """A reference for a data store, such as a warehouse or a file
         store."""
 
@@ -342,8 +328,6 @@ class Files(object):
         import hashlib
         import time
 
-        hash = None
-        size = None
         modified = None
 
         if bool(path) and path.startswith('http'):
@@ -391,12 +375,10 @@ class Files(object):
             modified = int(time.time())
 
         else:
-            raise ValueError(
-                "Must provied an existing path, source or content. ")
+            raise ValueError("Must provied an existing path, source or content. ")
 
         if not content:
-            raise ValueError(
-                "Didn't get non-zero sized content from path , source or content")
+            raise ValueError("Didn't get non-zero sized content from path , source or content")
 
         return dict(hash=hash, size=size, modified=modified, content=content)
 

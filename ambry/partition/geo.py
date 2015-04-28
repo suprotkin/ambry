@@ -212,7 +212,8 @@ class GeoPartition(SqlitePartition):
 
         # local csv module shadows root #@UndefinedVariable
         rdr = csv.reader(stdout.decode('ascii').splitlines())
-        header = rdr.next()
+        # header = rdr.next()
+        rdr.next()
 
         if not progress_f:
             progress_f = lambda x: x
@@ -301,11 +302,7 @@ class GeoPartition(SqlitePartition):
                     try:
                         d[name] = feature.GetFieldAsString(i)
                     except TypeError as e:
-                        self.bundle.logger.error(
-                            "Type error for column '{}', type={}: {}".format(
-                                name,
-                                type_,
-                                e))
+                        self.bundle.logger.error("Type error for column '{}', type={}: {}".format(name, type_, e))
                         raise
 
                 g = feature.GetGeometryRef()
@@ -317,17 +314,15 @@ class GeoPartition(SqlitePartition):
                     if type_ == 'POLYGON' and col_type == 'MULTIPOLYGON':
                         g = ogr.ForceToMultiPolygon(g)
                     else:
-                        raise Exception(
-                            "Don't know how to handle this conversion case : {} -> {}".format(type_, col_type))
+                        raise Exception("Don't know how to handle this conversion case : {} -> {}"
+                                        .format(type_, col_type))
 
                 d['geometry'] = g.ExportToWkt()
 
                 ins.insert(d)
 
                 if logger:
-                    logger(
-                        "Importing shapefile to '{}'".format(
-                            self.identity.name))
+                    logger("Importing shapefile to '{}'".format(self.identity.name))
 
     def __repr__(self):
         return "<geo partition: {}>".format(self.name)

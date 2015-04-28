@@ -179,7 +179,7 @@ class BundleFilesystem(Filesystem):
             try:
                 # MUltiple process may try to make, so it could already exist
                 os.makedirs(dir_)
-            except Exception as e:  # @UnusedVariable
+            except Exception:
                 pass
 
             if not os.path.exists(dir_):
@@ -366,22 +366,17 @@ class BundleFilesystem(Filesystem):
         if not os.path.isdir(tmpdir):
             os.makedirs(tmpdir)
 
-        rtrn = True
+        # rtrn = True
 
         try:
             with zipfile.ZipFile(path) as zf:
-                abs_path = None
+                # abs_path = None
                 for name in zf.namelist():
                     # Noidea about this, but it seems useless.
                     if '__MACOSX' in name:
                         continue
 
-                    abs_path = self._get_unzip_file(
-                        cache,
-                        tmpdir,
-                        zf,
-                        path,
-                        name)
+                    abs_path = self._get_unzip_file(cache, tmpdir, zf, path, name)
 
                     if not abs_path:
                         continue
@@ -389,10 +384,7 @@ class BundleFilesystem(Filesystem):
                     if regex and regex.match(name) or not regex:
                         yield abs_path
         except Exception as e:
-            self.bundle.error(
-                "File '{}' can't be unzipped, removing it: {}".format(
-                    path,
-                    e))
+            self.bundle.error("File '{}' can't be unzipped, removing it: {}".format(path, e))
             os.remove(path)
             raise
         finally:
@@ -484,7 +476,7 @@ class BundleFilesystem(Filesystem):
             if attempts > 0:
                 self.bundle.error("Retrying download of {}".format(url))
 
-            cached_file = None
+            # cached_file = None
             out_file = None
             excpt = None
 
@@ -513,27 +505,22 @@ class BundleFilesystem(Filesystem):
                             missing_ok=True))
 
                     resp = urllib2.urlopen(url)
-                    headers = resp.info()  # @UnusedVariable
+                    # headers = resp.info()  # @UnusedVariable
+                    resp.info()
 
                     if resp.getcode() is not None and resp.getcode() != 200:
-                        raise DownloadFailedError(
-                            "Failed to download {}: code: {} ".format(
-                                url, resp.getcode()))
+                        raise DownloadFailedError("Failed to download {}: code: {} ".format(url, resp.getcode()))
 
                     try:
                         out_file = cache.put(resp, file_path)
                     except:
-                        self.bundle.error(
-                            "Caught exception, deleting download file")
+                        self.bundle.error("Caught exception, deleting download file")
                         cache.remove(file_path, propagate=True)
                         raise
 
                     if test_f and not test_f(out_file):
                         cache.remove(file_path, propagate=True)
-                        raise DownloadFailedError(
-                            "Download didn't pass test function " +
-                            url)
-
+                        raise DownloadFailedError("Download didn't pass test function %s" % url)
                 break
 
             except KeyboardInterrupt:
@@ -544,13 +531,7 @@ class BundleFilesystem(Filesystem):
                 self.bundle.error("Failed:  " + str(e))
                 excpt = e
             except IOError as e:
-                self.bundle.error(
-                    "Failed to download " +
-                    url +
-                    " to " +
-                    file_path +
-                    " : " +
-                    str(e))
+                self.bundle.error("Failed to download %s to %s: %s" % (url, file_path, e))
                 excpt = e
             except urllib.ContentTooShortError as e:
                 self.bundle.error("Content too short for " + url)
@@ -564,11 +545,7 @@ class BundleFilesystem(Filesystem):
                 excpt = e
 
             except Exception as e:
-                self.bundle.error(
-                    "Unexpected download error '" +
-                    str(e) +
-                    "' when downloading " +
-                    str(url))
+                self.bundle.error("Unexpected download error '%(e)s' when downloading %(url)s" % {'e': e, 'url': url})
                 cache.remove(file_path, propagate=True)
                 raise
 
@@ -600,7 +577,6 @@ class BundleFilesystem(Filesystem):
         """
         import os.path
 
-        opened = False
         if isinstance(f, basestring):
             if not f.endswith('.csv'):  # Maybe the name of a source
                 if f in self.bundle.metadata.sources:
@@ -759,16 +735,13 @@ class BundleFilesystem(Filesystem):
                 raise e
 
             a_path = self.filesystem.path(rel_path)
-            o = File(path=rel_path,
-                     hash=Filesystem.file_hash(a_path),
-                     modified=os.path.getmtime(a_path),
-                     process='none'
-                     )
+            o = File(path=rel_path, hash=Filesystem.file_hash(a_path), modified=os.path.getmtime(a_path),
+                     process='none')
             s.add(o)
             s.commit()
             o._is_new = True
 
-        except Exception as e:
+        except Exception:
             return None
 
         return o

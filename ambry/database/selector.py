@@ -37,7 +37,6 @@ class RowSelector(object):
 
         if self.index_col:
             def gen():
-                header = None
                 for i, row in enumerate(self.partition.query(
                         self.sql, *self.args, **self.kwargs)):
                     if i == 0:

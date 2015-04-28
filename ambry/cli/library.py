@@ -472,7 +472,7 @@ def library_push(args, l, config):
         rate = 0
 
         prt("-- Pushing to {}", l.remotes)
-        start = time.clock()
+        # start = time.clock()
         for ref, t in files:
 
             if t not in (Dataset.LOCATION.LIBRARY, Dataset.LOCATION.PARTITION):
@@ -584,7 +584,8 @@ def library_get(args, l, config):
     elif b.partitions:
         for p in b.partitions:
             prt("get: {}".format(p.identity.vname))
-            bp = l.get(p.identity.vid)
+            # bp = l.get(p.identity.vid)
+            l.get(p.identity.vid)
 
         b.partition = None
 

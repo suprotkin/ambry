@@ -150,9 +150,7 @@ class ValueWriter(InserterInterface):
                 raise
             except Exception as e:
                 if self.bundle:
-                    self.bundle.error(
-                        "Exception during ValueWriter.insert: " +
-                        str(e))
+                    self.bundle.error("Exception during ValueWriter.insert: " + str(e))
                 self.rollback()
                 raise
         else:
@@ -211,7 +209,7 @@ class CodeCastErrorHandler(object):
     def finish(self):
         """Add all of the codes to the codes table."""
         from ..dbexceptions import NotFoundError
-        schema = self.inserter.bundle.schema
+        self.inserter.bundle.schema
 
         with self.inserter.bundle.session:
 
@@ -262,10 +260,10 @@ class ValueInserter(ValueWriter):
 
             self.null_row = orm_table.null_dict
 
-        self.cast_error_handler = cast_error_handler(
-            self) if cast_error_handler else None
+        self.cast_error_handler = cast_error_handler(self) if cast_error_handler else None
 
-        self._max_lengths = [0 for x in self.sizable_fields]
+        # self._max_lengths = [0 for x in self.sizable_fields]
+        self._max_lengths = [0] * len(self.sizable_fields)
 
         self.statement = self.table.insert()
 
@@ -284,7 +282,7 @@ class ValueInserter(ValueWriter):
         if isinstance(values, RowProxy):
             values = dict(values)
 
-        code_dict = None
+        # code_dict = None
 
         try:
             cast_errors = None
@@ -300,9 +298,7 @@ class ValueInserter(ValueWriter):
 
                 if self.skip_none:
 
-                    d = {
-                        k: d[k] if k in d and d[k] is not None else v for k,
-                        v in self.null_row.items()}
+                    d = {k: d[k] if k in d and d[k] is not None else v for k, v in self.null_row.items()}
 
             else:
                 raise DeprecationWarning(

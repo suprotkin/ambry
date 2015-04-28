@@ -173,7 +173,7 @@ def partition_path(b, p=None):
         try:
             b = str(on.as_dataset)
         except AttributeError:
-            b = str(on)
+            # b = str(on)
             raise
     return "/bundles/{}/partitions/{}.html".format(resolve(b), resolve(p))
 
@@ -307,11 +307,11 @@ class Renderer(object):
 
         # Add a prefix to the URLs when the HTML is generated for the local
         # filesystem.
-        def prefix_root(r, f):
-            @wraps(f)
-            def wrapper(*args, **kwds):
-                return os.path.join(r, f(*args, **kwds))
-            return wrapper
+        # def prefix_root(r, f):
+        #     @wraps(f)
+        #     def wrapper(*args, **kwds):
+        #         return os.path.join(r, f(*args, **kwds))
+        #     return wrapper
 
         return {
             'pretty_time': pretty_time,
@@ -329,21 +329,12 @@ class Renderer(object):
             'extract_url': extract_url,
             'db_download_url': db_download_url,
             'bundle_sort': lambda l,
-            key: sorted(
-                l,
-                key=lambda x: x['identity'][key])}
+            key: sorted(l, key=lambda x: x['identity'][key])}
 
     def render(self, template, *args, **kwargs):
 
         if self.content_type == 'json':
-            return Response(
-                dumps(
-                    dict(
-                        **kwargs),
-                    cls=JSONEncoder,
-                    indent=4),
-                mimetype='application/json')
-
+            return Response(dumps(dict(**kwargs), cls=JSONEncoder, indent=4), mimetype='application/json')
         else:
             return template.render(*args, **kwargs)
 

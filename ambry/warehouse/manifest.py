@@ -333,11 +333,7 @@ class Manifest(object):
                 if pf:
                     section.content = pf(section)
             except Exception as e:
-                self.logger.error(
-                    "Failed to process section at line {} : {}: {} ".format(
-                        line,
-                        section,
-                        e))
+                self.logger.error("Failed to process section at line {} : {}: {} ".format(line, section, e))
                 del sections[line]
 
         # Link docs to previous sections, where appropriate
@@ -346,7 +342,8 @@ class Manifest(object):
         for line_no in sorted(sections.keys()):
             section = sections[line_no]
 
-            if previous_section and section.tag == 'doc' and previous_section.tag in ['title', 'view', 'mview', 'extract']:
+            if previous_section and section.tag == 'doc' \
+                    and previous_section.tag in ['title', 'view', 'mview', 'extract']:
                 section.content['ref'] = previous_section.name
                 previous_section.doc = section.content
 
@@ -511,11 +508,7 @@ class Manifest(object):
                 partitions.append(d)
 
             except ParseError as e:
-                raise ParseError(
-                    "Failed to parse in section at line #{}: {}".format(
-                        start_line +
-                        i,
-                        e))
+                raise ParseError("Failed to parse in section at line #{}: {}".format(start_line + i, e))
 
         self.partitions = partitions
         return dict(partitions=partitions)
@@ -532,15 +525,11 @@ class Manifest(object):
                 if not ident:
                     raise ParseError(
                         "Partition reference not resolved to a bundle: '{}' in manifest '{}' "
-                        " for library {}" .format(
-                            partition['partition'],
-                            self.path,
-                            library.database.dsn))
+                        " for library {}" .format(partition['partition'], self.path, library.database.dsn))
 
                 if not ident.partition:
                     raise ParseError(
-                        "Partition reference not resolved to a partition: '{}' ".format(
-                            partition['partition']))
+                        "Partition reference not resolved to a partition: '{}' ".format(partition['partition']))
 
                 b = LibraryDbBundle(library.database, ident.vid)
 

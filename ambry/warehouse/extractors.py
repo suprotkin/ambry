@@ -355,7 +355,7 @@ class OgrExtractor(Extractor):
                         name = self.mangle_name(str(name))
 
                         feature.SetField(name, value)
-                    except Exception as e:
+                    except Exception:
                         print 'Failed for {}={} ({})'.format(name, value, type(value))
                         raise
                     except NotImplementedError as e:
@@ -368,9 +368,7 @@ class OgrExtractor(Extractor):
             if layer.CreateFeature(feature) != 0:
                 import gdal
                 raise Exception(
-                    'Failed to add feature: {}: geometry={}'.format(
-                        gdal.GetLastErrorMsg(),
-                        geometry.ExportToWkt()))
+                    'Failed to add feature: {}: geometry={}'.format(gdal.GetLastErrorMsg(), geometry.ExportToWkt()))
 
             feature.Destroy()
 

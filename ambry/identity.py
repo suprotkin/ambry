@@ -441,10 +441,7 @@ class PartitionName(PartialPartitionName, Name):
 
             return os.path.join(*parts)
         except TypeError as e:
-            raise TypeError(
-                "Path failed for partition {}: {}".format(
-                    self.name,
-                    e.message))
+            raise TypeError("Path failed for partition {}: {}".format(self.name, e.message))
 
     @property
     def source_path(self):
@@ -461,10 +458,7 @@ class PartitionName(PartialPartitionName, Name):
         try:
             return os.path.join(*(self._local_parts()))
         except TypeError as e:
-            raise TypeError(
-                "Path failed for partition {} : {}".format(
-                    self.name,
-                    e.message))
+            raise TypeError("Path failed for partition {} : {}".format(self.name, e.message))
 
     def type_is_compatible(self, o):
 
@@ -731,8 +725,8 @@ class ObjectNumber(object):
         if not on_str:
             raise Exception("Didn't get input")
 
-        if isinstance(on_str, unicode):
-            dataset = on_str.encode('ascii')
+        # if isinstance(on_str, unicode):
+        #     dataset = on_str.encode('ascii')
 
         type_ = on_str[0]
         on_str = on_str[1:]
@@ -1354,24 +1348,17 @@ class Identity(object):
                 "Must have id and revision, or vid. Got neither from {}".format(d))
 
         if isinstance(on, DatasetNumber):
-
             try:
                 name = cls._name_class(**d)
                 ident = cls(name, on)
             except TypeError as e:
-                raise TypeError(
-                    "Failed to make identity from \n{}\n: {}".format(
-                        d,
-                        e.message))
+                raise TypeError("Failed to make identity from \n{}\n: {}".format(d, e.message))
 
         elif isinstance(on, PartitionNumber):
-
             ident = PartitionIdentity.from_dict(d)
+
         else:
-            raise TypeError(
-                "Can't make identity from {}; object number is wrong type: {}".format(
-                    d,
-                    type(on)))
+            raise TypeError("Can't make identity from {}; object number is wrong type: {}".format(d, type(on)))
 
         if 'md5' in d:
             ident.md5 = d['md5']
@@ -1768,10 +1755,7 @@ class PartitionIdentity(Identity):
         try:
             return ic(name, on)
         except TypeError as e:
-            raise TypeError(
-                "Failed to make identity from \n{}\n: {}".format(
-                    d,
-                    e.message))
+            raise TypeError("Failed to make identity from \n{}\n: {}".format(d, e.message))
 
     @classmethod
     def new_subclass(cls, name, object_number):

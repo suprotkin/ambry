@@ -230,7 +230,8 @@ class Search(object):
 
             search = SearchTermParser().parse(search['all'])
 
-        bvid_term = about_term = source_term = with_term = grain_term = years_term = in_term = ''
+        # bvid_term = about_term = source_term = with_term = grain_term = years_term = in_term = ''
+        about_term = source_term = with_term = grain_term = years_term = in_term = ''
 
         if search.get('source', False):
             source_term = "source:" + search.get('source', '').strip()
@@ -611,7 +612,6 @@ class SearchTermParser(object):
             toks = [(self.MARKER, 'about')] + toks
 
         # Group the terms by their marker.
-        last_marker = None
         bymarker = []
         for t in toks:
             if t[0] == self.MARKER:

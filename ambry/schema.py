@@ -133,9 +133,8 @@ class Schema(object):
                     or_(Table.vid == name_or_id, Table.id_ == name_or_id,
                         Table.name == Table.mangle_name(name_or_id))).one())
 
-        except sqlalchemy.orm.exc.NoResultFound as e:
-            raise NotFoundError(
-                "No table for name_or_id: '{}'".format(name_or_id))
+        except sqlalchemy.orm.exc.NoResultFound:
+            raise NotFoundError("No table for name_or_id: '{}'".format(name_or_id))
 
     def table(self, name_or_id, session=None):
         '''Return an orm.Table object, from either the id or name. This is
@@ -144,8 +143,7 @@ class Schema(object):
         if session is None:
             session = self.bundle.database.session
 
-        return Schema.get_table_from_database(self.bundle.database, name_or_id,
-                                              session=session,
+        return Schema.get_table_from_database(self.bundle.database, name_or_id, session=session,
                                               d_vid=self.bundle.identity.vid)
 
     def column(self, table, column_name):
@@ -176,7 +174,7 @@ class Schema(object):
         if not kwargs.get('fast', False):
             try:
                 row = self.table(name)
-            except NotFoundError as e:
+            except NotFoundError:
                 row = None
         else:
             row = None
@@ -328,13 +326,13 @@ class Schema(object):
             try:
                 column.python_cast(column.default)
             except TypeError as e:
-                errors.append((table.name, column.name,
-                               "Bad default value '{}' for type '{}' (T); {}"
-                               .format(column.default, column.datatype, e)))
+                errors.append(
+                    (table.name, column.name,
+                     "Bad default value '{}' for type '{}' (T); {}".format(column.default, column.datatype, e)))
             except ValueError:
-                errors.append((table.name, column.name,
-                               "Bad default value '{}' for type '{}' (V)"
-                               .format(column.default, column.datatype)))
+                errors.append(
+                    (table.name, column.name,
+                     "Bad default value '{}' for type '{}' (V)".format(column.default, column.datatype)))
 
     @classmethod
     def translate_type(cls, driver, table, column):
@@ -571,6 +569,8 @@ class Schema(object):
             if 'caster' in c.data and c.data['caster']:
                 t = None
 
+                # Do we need for loop here?
+                # TODO: Cover with tests
                 for l in [self.bundle, self.bundle.__module__]:
                     try:
                         t = getattr(self.bundle, c.data['caster'])
@@ -657,10 +657,9 @@ class Schema(object):
 
                         t = self.add_table(row['table'], fast=fast, **table_row)
                     except Exception as e:
-                        errors.append((
-                            None, None,
-                            "Failed to add table: {}. Row={}. "
-                            "Exception={}".format(row['table'], dict(row), e)))
+                        errors.append(
+                            (None, None,
+                             "Failed to add table: {}. Row={}. Exception={}".format(row['table'], dict(row), e)))
                         return warnings, errors
 
                     new_table = False
@@ -766,7 +765,8 @@ class Schema(object):
                     .format(t.name, proto_vid))
                 continue
 
-            t_on = ObjectNumber.parse(proto_vid)
+            # t_on = ObjectNumber.parse(proto_vid)
+            ObjectNumber.parse(proto_vid)
 
             for c in proto_table.columns:
 
@@ -806,7 +806,7 @@ class Schema(object):
         for c in q.all():
 
             try:
-                on = ObjectNumber.parse(c.proto_vid)
+                ObjectNumber.parse(c.proto_vid)
 
                 # Its all good.
 
@@ -909,7 +909,7 @@ class Schema(object):
         if not out_table_name:
             out_table_name = in_table.name
 
-        with self.bundle.session as s:
+        with self.bundle.session:
 
             cols = []
             for c in in_table.columns:
@@ -1113,7 +1113,8 @@ class Schema(object):
 
         g = self._dump_gen(self)
 
-        header = g.next()
+        # header = g.next()
+        g.next()
 
         for row in g:
             o[row['table']][row['seq'] - 1] = row
@@ -1125,7 +1126,8 @@ class Schema(object):
 
         g = self._dump_gen(self, table_name=table)
 
-        header = g.next()
+        # header = g.next()
+        g.next()
 
         rows = []
         rows.append(['#', 'Id', 'Column', 'Type', 'Size', 'Description'])
@@ -1478,9 +1480,9 @@ class {name}(Base):
         type_map = {int: 'integer', str: 'varchar', float: 'real',
                     datetime: 'datetime', date: 'date', time: 'time'}
 
-        ok_chars = string.digits + string.letters + string.punctuation + ' '
+        # ok_chars = string.digits + string.letters + string.punctuation + ' '
 
-        with self.bundle.session as s:
+        with self.bundle.session:
 
             table = self.table(table_name)
 
@@ -1488,38 +1490,26 @@ class {name}(Base):
                 name = col.name
 
                 if name == 'id':
-                    self.add_column(table, 'id', datatype='integer',
-                                    is_primary_key=True)
-
+                    self.add_column(table, 'id', datatype='integer', is_primary_key=True)
                 else:
-
                     type_, has_codes = col.resolved_type()
-
-                    description = re.sub('[\r\n\s]+', ' ',
-                                         col.description).strip() if col.description else ''
+                    description = re.sub('[\r\n\s]+', ' ', col.description).strip() if col.description else ''
 
                     # add_column will update existing columns
-                    orm_col = self.add_column(table, name,
-                                              datatype=type_map[type_],
-                                              description=description,
+                    orm_col = self.add_column(table, name, datatype=type_map[type_], description=description,
                                               size=col.length if type_ == str else None,
-                                              data=dict(
-                                                  has_codes=1) if has_codes else {})
+                                              data=dict(has_codes=1) if has_codes else {})
 
                     if has_codes:
                         if False:
                             # This mostly just muchs up loading files be altering the header.
-                            self.add_column(table, name + '_codes',
-                                            datatype='varchar',
-                                            description='Non-numeric codes extracted from the {} column'.format(
-                                                name),
-                                            data={'is_code': 1},
-                                            derivedfrom=orm_col.id_)
+                            self.add_column(table, name + '_codes', datatype='varchar',
+                                            description='Non-numeric codes extracted from the {} column'.format(name),
+                                            data={'is_code': 1}, derivedfrom=orm_col.id_)
 
         self.write_schema()
 
-    def update_from_iterator(self, table_name, iterator, header=None,
-                             max_n=None, logger=None):
+    def update_from_iterator(self, table_name, iterator, header=None, max_n=None, logger=None):
         """
 
         :param table_name:

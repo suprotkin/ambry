@@ -72,16 +72,17 @@ def capture_return_exception(e):
     import sys
     import traceback
 
-    (exc_type, exc_value, exc_traceback) = sys.exc_info()  # @UnusedVariable
+    # (exc_type, exc_value, exc_traceback) = sys.exc_info()  # @UnusedVariable
 
     tb_list = traceback.format_list(traceback.extract_tb(sys.exc_info()[2]))
 
-    return {'exception':
-            {'class': e.__class__.__name__,
-             'args': e.args,
-             'trace': tb_list
-             }
-            }
+    return {
+        'exception': {
+            'class': e.__class__.__name__,
+            'args': e.args,
+            'trace': tb_list
+        }
+    }
 
 
 def _CaptureException(f, *args, **kwargs):
@@ -352,7 +353,7 @@ def _send_csv_if(did, pid, table_name, library):
     pid, _, _ = process_pid(did, pid, library)
 
     # p_orm is a database entry, not a partition
-    p = library.get(pid).partition
+    library.get(pid).partition
 
     i = int(request.query.get('i', 1))
     n = int(request.query.get('n', 1))
@@ -822,21 +823,20 @@ def get_partition(did, pid, library):
 @get('/datasets/<did>/partitions/<pid>/db')
 @CaptureException
 def get_partition_file(did, pid, library):
-    from ambry.cache import RemoteMarker
-    from ambry.identity import Identity
+    # from ambry.cache import RemoteMarker
+    # from ambry.identity import Identity
 
     b = library.get(did)
 
     if not b:
         raise exc.NotFound("No bundle found for id {}".format(did))
 
-    payload = request.json
+    # payload = request.json
 
     p = b.partitions.get(pid)
 
     if not p:
-        raise exc.NotFound(
-            "No partition found for identifier '{}' ".format(pid))
+        raise exc.NotFound("No partition found for identifier '{}' ".format(pid))
 
     return redirect(_download_redirect(p.identity, library))
 

@@ -154,7 +154,7 @@ def remote_list(args, l, rc, return_meta=False):
                     data['identity']['vid'],
                     data['identity']['vname'],
                     id_)
-            except Exception as e:
+            except Exception:
                 prt("{:10s} {:50s} {:s}", '[ERROR]', '', id_)
 
 

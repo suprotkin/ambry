@@ -360,27 +360,13 @@ def parse_date(name, v):
         try:
             return dp.parse(v).date()
         except ValueError as e:
-            raise CastingError(
-                name,
-                v,
-                "Failed to parse time for value '{}': {}".format(
-                    v,
-                    e.message))
+            raise CastingError(name, v, "Failed to parse time for value '{}': {}".format(v, e.message))
         except TypeError as e:
-            raise CastingError(
-                name,
-                v,
-                "Failed to parse time for value '{}': {}".format(
-                    v,
-                    e.message))
+            raise CastingError(name, v, "Failed to parse time for value '{}': {}".format(v, e.message))
     elif isinstance(v, datetime.date):
         return v
     else:
-        raise CastingError(
-            name,
-            v,
-            "Expected datetime.date or basestring, got '{}'".format(
-                type(v)))
+        raise CastingError(name, v, "Expected datetime.date or basestring, got '{}'".format(type(v)))
 
 
 def parse_time(name, v):
@@ -392,20 +378,11 @@ def parse_time(name, v):
         try:
             return dp.parse(v).time()
         except ValueError as e:
-            raise CastingError(
-                name,
-                v,
-                "Failed to parse time for value '{}': {}".format(
-                    v,
-                    e.message))
+            raise CastingError(name, v, "Failed to parse time for value '{}': {}".format(v, e.message))
     elif isinstance(v, datetime.time):
         return v
     else:
-        raise CastingError(
-            name,
-            v,
-            "Expected datetime.time or basestring, got '{}'".format(
-                type(v)))
+        raise CastingError(name, v, "Expected datetime.time or basestring, got '{}'".format(type(v)))
 
 
 def parse_datetime(name, v):
@@ -417,19 +394,9 @@ def parse_datetime(name, v):
         try:
             return dp.parse(v)
         except ValueError as e:
-            raise CastingError(
-                name,
-                v,
-                "Failed to parse time for value '{}': {}".format(
-                    v,
-                    e.message))
+            raise CastingError(name, v, "Failed to parse time for value '{}': {}".format(v, e.message))
         except TypeError as e:
-            raise CastingError(
-                name,
-                v,
-                "Failed to parse time for value '{}': {}".format(
-                    v,
-                    e.message))
+            raise CastingError(name, v, "Failed to parse time for value '{}': {}".format(v, e.message))
     elif isinstance(v, datetime.datetime):
         return v
     else:
@@ -454,10 +421,11 @@ class CasterTransformBuilder(object):
 
     def makeListTransform(self):
         import uuid
+        raise NotImplementedError("Needs to be fixed")
+
         import datetime
         f_name = "row_transform_" + str(uuid.uuid4()).replace('-', '')
 
-        raise NotImplementedError("Needs to be fixed")
 
         o = """
 def {}(row):
@@ -505,7 +473,7 @@ def {}(row):
         import datetime
 
         f_name = "dict_transform_" + str(uuid.uuid4()).replace('-', '')
-        f_name_inner = "dict_transform_" + str(uuid.uuid4()).replace('-', '')
+        # f_name_inner = "dict_transform_" + str(uuid.uuid4()).replace('-', '')
 
         c = []
 
@@ -527,32 +495,21 @@ def {}(row):
             if type_ == datetime.date:
                 o += "'{name}':parse_date('{name}', row.get('{name}'))".format(name=name)
                 c.append(
-                    "'{name}':lambda v: parse_date('{name}', v)".format(
-                        name=name))
+                    "'{name}':lambda v: parse_date('{name}', v)".format(name=name))
             elif type_ == datetime.time:
                 o += "'{name}':parse_time('{name}', row.get('{name}'))".format(name=name)
                 c.append(
-                    "'{name}':lambda v: parse_time('{name}', v)".format(
-                        name=name))
+                    "'{name}':lambda v: parse_time('{name}', v)".format(name=name))
             elif type_ == datetime.datetime:
-                o += "'{name}':parse_datetime('{name}', row.get('{name}'))".format(
-                    name=name)
+                o += "'{name}':parse_datetime('{name}', row.get('{name}'))".format(name=name)
                 c.append(
-                    "'{name}':lambda v:parse_datetime('{name}', v)".format(
-                        name=name))
+                    "'{name}':lambda v:parse_datetime('{name}', v)".format(name=name))
             elif type_ == int:
                 o += "'{name}':parse_int('{name}', row.get('{name}'))".format(name=name)
-                c.append(
-                    "'{name}':lambda v:parse_int('{name}', v)".format(
-                        name=name))
+                c.append("'{name}':lambda v:parse_int('{name}', v)".format(name=name))
             else:
-                o += "'{name}':parse_type({type},'{name}', row.get('{name}'))".format(
-                    type=type_.__name__,
-                    name=name)
-                c.append(
-                    "'{name}':lambda v:parse_type({type},'{name}', v)".format(
-                        type=type_.__name__,
-                        name=name))
+                o += "'{name}':parse_type({type},'{name}', row.get('{name}'))".format(type=type_.__name__, name=name)
+                c.append("'{name}':lambda v:parse_type({type},'{name}', v)".format(type=type_.__name__, name=name))
 
         o += """}"""
 
@@ -603,7 +560,7 @@ def {}(row):
 
             try:
                 return f[1](d), {}
-            except CastingError as e:
+            except CastingError:
 
                 do = {}
                 cast_errors = {}
@@ -612,7 +569,6 @@ def {}(row):
                     try:
                         do[k] = f[2][k](v)
                     except CastingError:
-
                         do[k + '_code'] = v
                         cast_errors[k] = v
                         do[k] = None

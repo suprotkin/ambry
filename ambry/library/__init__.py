@@ -37,13 +37,12 @@ def _new_library(config):
     except OperationalError as e:
         from ..dbexceptions import DatabaseError
 
-        raise DatabaseError('Failed to create {} : {}'.format(database.dsn,
-                                                              e.message))
+        raise DatabaseError('Failed to create {} : {}'.format(database.dsn, e.message))
 
     if 'upstream' in config:
         raise DeprecationWarning("Upstream no longer allowed in configuration")
 
-    root = config['root']
+    # root = config['root']
 
     remotes = [new_cache(remote) for remote in config.get('remotes', [])]
 
@@ -527,9 +526,7 @@ class Library(object):
                         bundle, dataset.partition.id_, install_bundle=False, install_tables=False)
                 except IntegrityError as e:
                     self.database.session.rollback()
-                    self.logger.error(
-                        "Partition is already in Library.: {} ".format(
-                            e.message))
+                    self.logger.error("Partition is already in Library.: {} ".format(e.message))
 
                 # Attach the partition into the bundle, and return both.
                 bundle.partition = partition
@@ -876,8 +873,6 @@ class Library(object):
         if not self._bundle:
             raise ConfigurationError("Can't use the dep() method for a library that is not attached to a bundle")
 
-        errors = 0
-
         deps = self._bundle.metadata.dependencies
 
         if not deps:
@@ -967,7 +962,6 @@ class Library(object):
         """
         import time
 
-        what = None
         start = None
         end = None
 
@@ -1089,9 +1083,9 @@ class Library(object):
 
                     path_ = os.path.join(r, file_)
 
-                    extant_bundle = (self.files.query.type(Files.TYPE.BUNDLE)
-                                     .path(path_).one_maybe)
-                    extant_partition = (self.files.query.type(Files.TYPE.PARTITION).path(path_).one_maybe)
+                    # extant_bundle = (self.files.query.type(Files.TYPE.BUNDLE)
+                    #                  .path(path_).one_maybe)
+                    # extant_partition = (self.files.query.type(Files.TYPE.PARTITION).path(path_).one_maybe)
 
                     # if (extant_bundle or extant_partition):
                     #    continue
@@ -1103,8 +1097,7 @@ class Library(object):
                         try:
                             bident = b.identity
                         except Exception as e:
-                            self.logger.error("Failed to open bundle from "
-                                              "{}: {} ".format(path_, e))
+                            self.logger.error("Failed to open bundle from {}: {} ".format(path_, e))
                             continue
 
                         # The path check above is wrong sometime when there
@@ -1162,16 +1155,13 @@ class Library(object):
                     self.database.commit()
                     self.database.close()
                 except Exception as e:
-                    self.logger.error("Failed to sync {}; {}"
-                                      .format(bundle.identity.vname, e))
+                    self.logger.error("Failed to sync {}; {}".format(bundle.identity.vname, e))
 
                 bundle.close()
 
             except Exception as e:
-                self.logger.error('Failed to install bundle {}: {}'
-                                  .format(bundle.identity.vname, e.message))
+                self.logger.error('Failed to install bundle {}: {}'.format(bundle.identity.vname, e.message))
                 raise
-                continue
 
         return bundles
 
@@ -1259,15 +1249,12 @@ class Library(object):
                     b.close()
                     continue
                 except Exception as e:
-                    self.logger.error(
-                        "Failed to put bundle {}: {}".format(cache_key, e))
+                    self.logger.error("Failed to put bundle {}: {}".format(cache_key, e))
                     b.close()
                     raise
-                    continue
 
                 try:
-                    self.files.install_remote_bundle(b.identity, remote, {},
-                                                     commit=True)
+                    self.files.install_remote_bundle(b.identity, remote, {}, commit=True)
                 except IntegrityError:
                     b.close()  # Just means we already have it installed
                     continue
@@ -1283,10 +1270,9 @@ class Library(object):
 
                 try:
                     self.files.insert_collection()
-                except IntegrityError as e:
+                except IntegrityError:
                     b.close()  # Just means we already have it installed
                     raise
-                    continue
 
                 if installed:
                     self.database.insert_partition_collection()
@@ -1306,14 +1292,12 @@ class Library(object):
 
         for ident in self.source._dir_list().values():
             try:
-
                 path = ident.bundle_path
 
                 self.sync_source_dir(ident, path)
 
             except Exception as e:
-                self.logger.error("Failed to sync: bundle_path={} : {} "
-                                  .format(ident.bundle_path, e.message))
+                self.logger.error("Failed to sync: bundle_path={} : {} ".format(ident.bundle_path, e.message))
 
         self.database.commit()
 
@@ -1325,7 +1309,7 @@ class Library(object):
         try:
             self.database.install_dataset_identity(ident)
             self.database.commit()
-        except (ConflictError, IntegrityError) as e:
+        except (ConflictError, IntegrityError):
             self.database.rollback()
             pass
 

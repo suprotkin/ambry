@@ -1151,7 +1151,7 @@ Columns:
 
         """
 
-        cols = []
+        # cols = []
         raise DeprecationWarning()
         # return ",".join(["{} AS {}".format(c.name, c.vid)
         #                 for c in self.columns])

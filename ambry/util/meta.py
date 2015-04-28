@@ -178,14 +178,14 @@ class Metadata(object):
                 raise ValueError(str(e) + " : " + str(row))
 
             try:
-                v = json.loads(value)
+                json.loads(value)
             except ValueError:
                 pass
             except TypeError:
                 pass
 
             try:
-                m = self._members[group]
+                self._members[group]
             except KeyError:
 
                 if group not in self._term_values:
@@ -523,7 +523,7 @@ class DictGroup(Group, collections.MutableMapping):
         for k, v in d.items():
             try:
                 self.__setitem__(k, v)
-            except AttributeError as e:
+            except AttributeError:
                 self._top.add_error(self._key, k, None, v)
 
     def set_row(self, key, value):

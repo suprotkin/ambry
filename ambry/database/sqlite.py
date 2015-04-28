@@ -65,8 +65,7 @@ class SqliteAttachmentMixin(object):
         if name is None:
             import random
             import string
-            name = ''.join(random.choice(string.letters)
-                           for i in xrange(10))  # @UnusedVariable
+            name = ''.join(random.choice(string.letters) for i in xrange(10))  # @UnusedVariable
 
         q = """ATTACH DATABASE '{}' AS '{}' """.format(path, name)
 
@@ -172,28 +171,21 @@ class SqliteDatabase(RelationalDatabase):
 
     def __init__(self, dbname, memory=False, **kwargs):
         """"""
-        import os
+        # import os
 
         # For database bundles, where we have to pass in the whole file path
-        if memory:
-            base_path = ':memory:'
-        else:
-
+        if memory is False:
             if not dbname:
                 raise ValueError("Must have a dbname")
 
             if dbname[0] != '/':
-                import os
+                # import os
                 dbname = os.path.join(os.getcwd(), dbname)
 
             base_path, ext = os.path.splitext(dbname)
 
             if ext and ext != self.EXTENSION:
-                raise Exception(
-                    "Bad extension to file '{}': '{}'. Expected: {}".format(
-                        dbname,
-                        ext,
-                        self.EXTENSION))
+                raise Exception("Bad extension to file '{}': '{}'. Expected: {}".format(dbname, ext, self.EXTENSION))
 
             self.base_path = base_path
 
@@ -251,7 +243,7 @@ class SqliteDatabase(RelationalDatabase):
                         tb[0],
                         tb[1]))
                 return
-            except AlreadyLocked as e:
+            except AlreadyLocked:
                 global_logger.debug("Waiting for bundle lock")
                 time.sleep(1)
 
@@ -458,7 +450,7 @@ class SqliteDatabase(RelationalDatabase):
         except AttributeError:
             table_name = table
 
-        sql_file = temp_file_name()
+        # sql_file = temp_file_name()
 
         sql = '''
 .mode csv
@@ -661,11 +653,7 @@ class SqliteBundleDatabase(RelationalBundleDatabaseMixin, SqliteDatabase):
             return self.connection.execute(*args, **kwargs)
         except OperationalError as e:
             raise QueryError(
-                "Error while executing {} in database {} ({}): {}".format(
-                    args,
-                    self.dsn,
-                    type(self),
-                    e.message))
+                "Error while executing {} in database {} ({}): {}".format(args, self.dsn, type(self), e.message))
 
     def copy_table_from(self, source_db, table_name):
         """Copy the definition of a table from a soruce database to this one.
@@ -718,15 +706,10 @@ class SqliteMemoryDatabase(SqliteDatabase, SqliteAttachmentMixin):
             return self.connection.execute(*args, **kwargs)
         except OperationalError as e:
             raise QueryError(
-                "Error while executing {} in database {} ({}): {}".format(
-                    args,
-                    self.dsn,
-                    type(self),
-                    e.message))
+                "Error while executing {} in database {} ({}): {}".format(args, self.dsn, type(self), e.message))
 
 
 class BuildBundleDb(SqliteBundleDatabase):
-
     """For Bundle databases when they are being built, and the path is computed
     from the build base director."""
     @property
@@ -735,7 +718,6 @@ class BuildBundleDb(SqliteBundleDatabase):
 
 
 def _on_begin_bundle(dbapi_con):
-
     dbapi_con.execute("BEGIN")
 
 
@@ -762,7 +744,7 @@ def _on_connect_bundle(dbapi_con, con_record):
         dbapi_con.execute('PRAGMA temp_store = MEMORY')
         dbapi_con.execute('PRAGMA cache_size = 50000')
         dbapi_con.execute('PRAGMA foreign_keys = OFF')
-    except Exception as e:
+    except Exception:
         global_logger.error("Exception in {} ".format(dbapi_con))
         raise
 
@@ -803,7 +785,7 @@ def _on_connect_update_sqlite_schema(conn, con_record):
             try:
                 conn.execute(
                     'ALTER TABLE tables ADD COLUMN t_universe VARCHAR(200);')
-            except Exception as e:
+            except Exception:
                 pass
 
         if version < 17:
@@ -839,9 +821,8 @@ def _on_connect_update_sqlite_schema(conn, con_record):
 
         if version < 21:
             try:
-                conn.execute(
-                    "ALTER TABLE tables ADD COLUMN t_type VARCHAR(20) DEFAULT 'table'; ")
-            except Exception as e:
+                conn.execute("ALTER TABLE tables ADD COLUMN t_type VARCHAR(20) DEFAULT 'table'; ")
+            except Exception:
                 pass
 
         if version < 22:
@@ -849,15 +830,14 @@ def _on_connect_update_sqlite_schema(conn, con_record):
 
             try:
                 Code.__table__.create(bind=conn.engine)
-            except Exception as e:
+            except Exception:
                 pass
 
         if version < 23:
 
             try:
-                conn.execute(
-                    'ALTER TABLE columns ADD COLUMN c_derivedfrom VARCHAR(200)')
-            except OperationalError as e:
+                conn.execute('ALTER TABLE columns ADD COLUMN c_derivedfrom VARCHAR(200)')
+            except OperationalError:
                 pass
 
         if version < 24:
@@ -865,7 +845,7 @@ def _on_connect_update_sqlite_schema(conn, con_record):
 
             try:
                 SearchDoc.__table__.create(bind=conn.engine)
-            except OperationalError as e:
+            except OperationalError:
                 pass
 
         if version < 25:
@@ -873,26 +853,24 @@ def _on_connect_update_sqlite_schema(conn, con_record):
 
             try:
                 ColumnStat.__table__.create(bind=conn.engine)
-            except OperationalError as e:
+            except OperationalError:
                 pass
 
         if version < 27:
 
             try:
-                conn.execute(
-                    'ALTER TABLE colstats ADD COLUMN cs_lom VARCHAR(6)')
-            except OperationalError as e:
+                conn.execute('ALTER TABLE colstats ADD COLUMN cs_lom VARCHAR(6)')
+            except OperationalError:
                 pass
 
     if version < SqliteDatabase.SCHEMA_VERSION:
-        conn.execute(
-            'PRAGMA user_version = {}'.format(
-                SqliteDatabase.SCHEMA_VERSION))
+        conn.execute('PRAGMA user_version = {}'.format(SqliteDatabase.SCHEMA_VERSION))
 
 
 def insert_or_ignore(table, columns):
     return ("""INSERT OR IGNORE INTO {table} ({columns}) VALUES ({values})""".format(
         table=table,
         columns=','.join([c.name for c in columns]),
-        values=','.join(['?' for c in columns])  # @UnusedVariable
+        # values=','.join(['?'] for c in columns])  # @UnusedVariable
+        values=','.join(['?'] * len(columns))
     ))

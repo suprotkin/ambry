@@ -184,7 +184,7 @@ class LibraryDb(object):
         try:
             self.session.commit()
             # self.close_session()
-        except Exception as e:
+        except Exception:
             # self.logger.error("Failed to commit in {}; {}".format(self.dsn, e))
             raise
 
@@ -232,7 +232,7 @@ class LibraryDb(object):
                 rows = self.connection.execute(
                     "SELECT * FROM datasets WHERE d_vid = '{}' ".format(ROOT_CONFIG_NAME_V)).fetchone()
 
-            except ProgrammingError as e:
+            except ProgrammingError:
                 # This happens when the datasets table doesnt exist
                 rows = False
 
@@ -240,9 +240,8 @@ class LibraryDb(object):
                 return False
             else:
                 return True
-        except Exception as e:
+        except Exception:
             # What is the more specific exception here?
-
             return False
         finally:
             self.close_connection()
@@ -292,7 +291,7 @@ class LibraryDb(object):
                     # MUltiple process may try to make, so it could already
                     # exist
                     os.makedirs(dir_)
-                except Exception as e:  # @UnusedVariable
+                except Exception:
                     pass
 
                 if not os.path.exists(dir_):
@@ -321,7 +320,7 @@ class LibraryDb(object):
             return
 
         # sorted by foreign key dependency
-        for table in reversed(self.metadata.sorted_tables):
+        for table in db_tables:
             if table.name in library_tables:
                 table.drop(self.engine, checkfirst=True)
 
@@ -603,7 +602,7 @@ class LibraryDb(object):
         try:
             self.session.merge(ds)
             self.commit()
-        except IntegrityError as e:
+        except IntegrityError:
             self.session.rollback()
 
             if not overwrite:
@@ -614,11 +613,8 @@ class LibraryDb(object):
                 self.commit()
 
             except IntegrityError as e:
-                raise ConflictError(
-                    "Can't install dataset vid={}; \nOne already exists. ('{}');\n {}" .format(
-                        identity.vid,
-                        e.message,
-                        ds.dict))
+                raise ConflictError("Can't install dataset vid={}; \nOne already exists. ('{}');\n {}"
+                                    .format(identity.vid, e.message, ds.dict))
 
     def install_partition_identity(self, identity, data={}, overwrite=True):
         """Create the record for the dataset.
@@ -643,7 +639,7 @@ class LibraryDb(object):
                 self.session.add(p)
                 self.commit()
 
-            except IntegrityError as e:
+            except IntegrityError:
 
                 if not overwrite:
                     return
@@ -653,23 +649,18 @@ class LibraryDb(object):
                 self.commit()
 
         except IntegrityError as e:
-            raise ConflictError(
-                "Can't install partition vid={};\nOne already exists. ('{}');\n{}" .format(
-                    identity.vid,
-                    e.message,
-                    p.dict))
+            raise ConflictError("Can't install partition vid={};\nOne already exists. ('{}');\n{}"
+                                .format(identity.vid, e.message, p.dict))
 
     def install_bundle(self, bundle, commit=True):
         """Copy the schema and partitions lists into the library database."""
         from ambry.bundle import Bundle
-        from sqlalchemy.orm.exc import NoResultFound
-        from ..dbexceptions import ConflictError, NotFoundError
-        from sqlalchemy import update, or_
+        from ..dbexceptions import NotFoundError  # , ConflictError
+        # from sqlalchemy.orm.exc import NoResultFound
+        # from sqlalchemy import update, or_
 
         if not isinstance(bundle, Bundle):
-            raise ValueError(
-                "Can only install a  Bundle object. Got a {}".format(
-                    type(bundle)))
+            raise ValueError("Can only install a  Bundle object. Got a {}".format(type(bundle)))
 
             # The Tables only get installed when the dataset is installed,
             # not for the partition
@@ -677,9 +668,10 @@ class LibraryDb(object):
         self._mark_update()
 
         try:
-            dvid = self.get(bundle.identity.vid)
+            # dvid = self.get(bundle.identity.vid)
+            self.get(bundle.identity.vid)
         except NotFoundError:
-            dvid = None
+            pass
 
         # This was taken out because it prevents library bundles from being installed when the
         # dataset already exists because the source bundle was installed.
@@ -687,7 +679,6 @@ class LibraryDb(object):
         #   raise ConflictError("Bundle {} already installed".format(bundle.identity.fqname))
 
         try:
-
             dataset = self.install_dataset(bundle)
         except Exception as e:
 
@@ -705,7 +696,7 @@ class LibraryDb(object):
         columns = []
 
         # Link these after the tables and columns are created
-        foreign_keys = []
+        # foreign_keys = []
 
         for table in dataset.tables:
             tables.append(table.insertable_dict)
@@ -759,10 +750,7 @@ class LibraryDb(object):
         try:
             dataset = bdbs.query(Dataset).one()
         except OperationalError as e:
-            raise NotABundle(
-                "Error when refencing dataset for {} : {} ".format(
-                    bundle.database.path,
-                    e))
+            raise NotABundle("Error when refencing dataset for {} : {} ".format(bundle.database.path, e))
 
         dataset.location = Dataset.LOCATION.LIBRARY
 
@@ -864,15 +852,14 @@ class LibraryDb(object):
         """Mark a table record as installed."""
 
         s = self.session
-        table = None
 
         table = s.query(Table).filter(Table.vid == table_or_vid).one()
 
         if not table:
             table = s.query(Table).filter(Table.name == table.vid).one()
 
-        if not name:
-            name = table.name
+        # if not name:
+        #     name = table.name
 
         table.installed = 'y'
 
@@ -883,7 +870,6 @@ class LibraryDb(object):
         """Mark a table record as installed."""
 
         s = self.session
-        table = None
 
         p = s.query(Partition).filter(Partition.vid == p_vid).one()
 
@@ -972,7 +958,7 @@ class LibraryDb(object):
             dataset = partition.as_dataset()
             p_vid = partition.vid
 
-        b = LibraryDbBundle(self, dataset.vid)
+        LibraryDbBundle(self, dataset.vid)
 
         s = self.session
 
@@ -1162,8 +1148,8 @@ class LibraryDb(object):
 
         s = self.session
 
-        has_partition = False
-        has_where = False
+        # has_partition = False
+        # has_where = False
 
         if isinstance(query_command, Identity):
             raise NotImplementedError()
@@ -1196,7 +1182,7 @@ class LibraryDb(object):
                     k = 'id_'
                 try:
                     query = query.filter(like_or_eq(getattr(Dataset, k), v))
-                except AttributeError as e:
+                except AttributeError:
                     # Dataset doesn't have the attribute, so ignore it.
                     pass
 
@@ -1266,11 +1252,8 @@ class LibraryDb(object):
                     pass
 
                 out.append(o)
-        except Exception as e:
-            self.logger.error(
-                "Exception while querrying in {}, schema {}".format(
-                    self.dsn,
-                    self._schema))
+        except Exception:
+            self.logger.error("Exception while querrying in {}, schema {}".format(self.dsn, self._schema))
             raise
 
         return out

@@ -149,7 +149,7 @@ class Column(object):
             self.type_counts[None] += 1
             return None
 
-        type_ = None
+        # type_ = None
 
         for test, testf in tests:
             t = testf(v)

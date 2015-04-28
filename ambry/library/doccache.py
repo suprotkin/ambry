@@ -287,14 +287,14 @@ class DocCache(object):
                 b_vname=b['identity']['vname']
             )
 
-        for vid, b in d['bundles'].items():
+        # for vid, b in d['bundles'].items():
+        if d['bundles']:
             for pvid, bvid in d['partitions'].items():
                 b = d['bundles'][bvid]
                 p = b['partitions'][pvid]
                 for tvid in p['table_vids']:
-
                     t = b['tables'][tvid]
-                    e = inst_table_entry(b, p, t)
+                    inst_table_entry(b, p, t)
 
         d['installed_table_names'] = installed_table_names
 

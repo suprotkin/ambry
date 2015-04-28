@@ -124,7 +124,7 @@ def bundle_file_type(path_or_file):
         path_or_file.seek(0)
         d = path_or_file.read(15)
         path_or_file.seek(loc)
-    except AttributeError as e:
+    except AttributeError:
         d = None
 
     if not d:
@@ -142,9 +142,8 @@ def bundle_file_type(path_or_file):
 
         try:
             path_or_file.seek(0)
-        except AttributeError as e:
+        except AttributeError:
             # Hopefilly, it is a FileLikeIter
-
             path_or_file.push(d)
 
     if not d:
@@ -456,11 +455,8 @@ class OrderedDictYAMLLoader(yaml.Loader):
             try:
                 hash(key)
             except TypeError as exc:
-                raise yaml.constructor.ConstructorError(
-                    'while constructing a mapping',
-                    node.start_mark,
-                    'found unacceptable key ({})'.format(exc),
-                    key_node.start_mark)
+                raise yaml.constructor.ConstructorError('while constructing a mapping', node.start_mark,
+                                                        'found unacceptable key ({})'.format(exc), key_node.start_mark)
             value = self.construct_object(value_node, deep=deep)
             mapping[key] = value
         return mapping
@@ -857,7 +853,7 @@ def md5_for_file(f, block_size=2 ** 20):
             md5.update(data)
         return md5.hexdigest()
 
-    except AttributeError as e:
+    except AttributeError:
         # Nope, not a FLO. Maybe string?
 
         file_name = f

@@ -235,7 +235,8 @@ class LoaderBundle(BuildBundle):
 
         # A proto terms map, for setting grains
         pt = self.library.get('civicknowledge.com-proto-proto_terms').partition
-        pt_map = {r['name']: r['obj_number'] for r in pt.rows}
+        # pt_map = {r['name']: r['obj_number'] for r in pt.rows}
+        {r['name']: r['obj_number'] for r in pt.rows}
 
         self.database.create()
 
@@ -247,7 +248,8 @@ class LoaderBundle(BuildBundle):
 
         if os.path.exists(sf_path):
             with open(sf_path, 'rbU') as f:
-                warnings, errors = self.schema.schema_from_file(f)
+                # warnings, errors = self.schema.schema_from_file(f)
+                self.schema.schema_from_file(f)
 
         if not self.run_args.get('clean', None):
             self._prepare_load_schema()
@@ -276,7 +278,8 @@ class LoaderBundle(BuildBundle):
             for source_name in sources:
 
                 try:
-                    fn = self.filesystem.download(source_name)
+                    # fn = self.filesystem.download(source_name)
+                    self.filesystem.download(source_name)
                 except urllib2.HTTPError:
                     self.error("Failed to download url for source: {}".format(source_name))
                     continue
@@ -338,18 +341,18 @@ class LoaderBundle(BuildBundle):
             # Don't add the columns that are already mapped.
             mapped_domain = set(item['col'] for item in col_map.values())
 
-            for table_name, sources in tables.items():
-                rg = self.row_gen_for_source(source_name)
+            # for table_name, sources in tables.items():
+            rg = self.row_gen_for_source(source_name)
 
-                header = rg.header  # Also sets unmangled_header
+            header = rg.header  # Also sets unmangled_header
 
-                descs = [x.replace('\n', '; ') for x in (rg.unmangled_header if rg.unmangled_header else header)]
+            descs = [x.replace('\n', '; ') for x in (rg.unmangled_header if rg.unmangled_header else header)]
 
-                for col_name, desc in zip(header, descs):
-                    k = col_name.strip()
+            for col_name, desc in zip(header, descs):
+                k = col_name.strip()
 
-                    if k not in col_map and col_name not in mapped_domain:
-                        col_map[k] = dict(header=k, col='')
+                if k not in col_map and col_name not in mapped_domain:
+                    col_map[k] = dict(header=k, col='')
 
             # Write back out
             with open(self.col_map_fn, 'w') as f:

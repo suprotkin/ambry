@@ -224,7 +224,10 @@ WHERE type='index' AND tbl_name = '{}';""".format(table)):
                 # return all elements that are +/-1 2 std from the mean
                 # We restrict the histograph to 4 std because for the small range of sparklines, a 0 value
                 # can make the histogram useless by pushing all other values into a single bin
-                df2std = lambda d: d[(d < (d.mean() + 2 * d.std())) & ((d.mean() - 2 * d.std()) < d)]
+                # df2std = lambda d: d[(d < (d.mean() + 2 * d.std())) & ((d.mean() - 2 * d.std()) < d)]
+                df2std = lambda d: filter(
+                    lambda item: d.mean() - d.std() * 2 < item < d.mean() + 2 * d.std(), d
+                )
 
                 h = np.histogram(df2std(df[col_name]))
 
@@ -335,7 +338,7 @@ WHERE type='index' AND tbl_name = '{}';""".format(table)):
 
         for source_name, space in extra_spaces:
             try:
-                g = civick.GVid.parse(space)
+                civick.GVid.parse(space)
             except KeyError:
 
                 places = list(
@@ -343,11 +346,8 @@ WHERE type='index' AND tbl_name = '{}';""".format(table)):
 
                 if not places:
                     from ..dbexceptions import BuildError
-                    raise BuildError(
-                        ("Failed to find space identifier '{}' in full text identifier search"
-                         " for partition '{}' and source name '{}'") .format(
-                            space, str(
-                                self.identity), source_name))
+                    raise BuildError("Failed to find space identifier '{}' in full text identifier search for partition"
+                                     " '{}' and source name '{}'".format(space, str(self.identity), source_name))
 
                 score, gvid, name = places[0]
 
@@ -356,14 +356,18 @@ WHERE type='index' AND tbl_name = '{}';""".format(table)):
 
                 geoids.add(civick.GVid.parse(gvid))
 
-        coverage, grain = simplify(geoids)
+        # geoids==0.0.9 does'n return grains
+        # coverage, grain = simplify(geoids)
+        coverage = simplify(geoids)
+        grain = set()
 
         if extra_grain:
             grain.add(extra_grain)
 
         # The first simplification may produce a set that can be simplified
         # again
-        coverage, _ = simplify(coverage)
+        # coverage, _ = simplify(coverage)
+        coverage = simplify(coverage)
 
         # For geo_coverage, only includes the higher level summary levels,
         # counties, states, places and urban areas

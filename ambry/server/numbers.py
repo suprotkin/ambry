@@ -65,16 +65,17 @@ def capture_return_exception(e):
     import sys
     import traceback
 
-    (exc_type, exc_value, exc_traceback) = sys.exc_info()  # @UnusedVariable
+    # (exc_type, exc_value, exc_traceback) = sys.exc_info()  # @UnusedVariable
 
     tb_list = traceback.format_list(traceback.extract_tb(sys.exc_info()[2]))
 
-    return {'exception':
-            {'class': e.__class__.__name__,
-             'args': e.args,
-             'trace': "\n".join(tb_list)
-             }
-            }
+    return {
+        'exception': {
+            'class': e.__class__.__name__,
+            'args': e.args,
+            'trace': "\n".join(tb_list),
+        }
+    }
 
 
 class RedisPlugin(object):
@@ -306,7 +307,7 @@ def get_next(redis, assignment_class=None, space=''):
 
     ok, since, nxt, delay, wait, safe = request_delay(nxt, delay, delay_factor)
 
-    with redis.pipeline() as pipe:
+    with redis.pipeline():  # as pipe:
         redis.set(next_key, nxt)
         redis.set(delay_key, delay)
 
@@ -325,9 +326,7 @@ def get_next(redis, assignment_class=None, space=''):
         redis.sadd(authallocated_key, dn)
 
     else:
-        number = None
-        raise exc.TooManyRequests(
-            " Access will resume in {} seconds".format(wait))
+        raise exc.TooManyRequests(" Access will resume in {} seconds".format(wait))
 
     return dict(ok=ok,
                 number=str(dn),

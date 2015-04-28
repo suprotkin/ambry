@@ -442,22 +442,17 @@ def root_search(args, l, config):
         print 'Updating the identifier'
 
         # sources = ['census.gov-index-counties', 'census.gov-index-places', 'census.gov-index-states']
-        sources = ['census.gov-index-counties', 'census.gov-index-states']
+        # sources = ['census.gov-index-counties', 'census.gov-index-states']
 
         records = []
 
         source = 'civicknowledge.com-terms-geoterms'
 
         p = l.get(source).partition
-        type = p.table.name
+        # type = p.table.name
 
         for row in p.rows:
-            records.append(
-                dict(
-                    identifier=row['gvid'],
-                    type=row['type'],
-                    name=row['name']))
-
+            records.append(dict(identifier=row['gvid'], type=row['type'], name=row['name']))
         l.search.index_identifiers(records)
 
         print "Reindexing docs"

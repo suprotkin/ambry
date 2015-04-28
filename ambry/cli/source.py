@@ -106,7 +106,8 @@ def source_parser(cmd):
         action="store_true",
         help='Display details of locations for each bundle')
     sp.add_argument('-F', '--fields', type=str, help="Specify fields to use")
-    group = sp.add_mutually_exclusive_group()
+    # group = sp.add_mutually_exclusive_group()
+    sp.add_mutually_exclusive_group()
     # group.add_argument('-f', '--forward',  default='f', dest='direction',
     # action='store_const', const='f',
     # help='Display bundles that this one depends on')
@@ -383,12 +384,9 @@ def source_new(args, l, st, rc):
             d['id'] = str(ns.next())
             prt("Got number from number server: {}".format(d['id']))
         except HTTPError as e:
-            warn(
-                "Failed to get number from number server. Config = {}: {}".format(
-                    nsconfig,
-                    e.message))
-            warn(
-                "Using self-generated number. There is no problem with this, but they are longer than centrally generated numbers.")
+            warn("Failed to get number from number server. Config = {}: {}".format(nsconfig, e.message))
+            warn("Using self-generated number. There is no problem with this, "
+                 "but they are longer than centrally generated numbers.")
             d['id'] = str(DatasetNumber())
 
     try:
@@ -480,10 +478,7 @@ def source_new(args, l, st, rc):
 
         from ..util import rm_rf
         rm_rf(bundle_dir)
-        fatal(
-            "Failed to sync bundle at {}  ; {}. Bundle deleted".format(
-                bundle_dir,
-                e.message))
+        fatal("Failed to sync bundle at {}  ; {}. Bundle deleted".format(bundle_dir, e.message))
     else:
         prt("CREATED: {}, {}", ident.fqname, bundle_dir)
 
@@ -728,12 +723,12 @@ def source_deps(args, l, st, rc):
     from ..orm import Dataset
     from ..identity import LocationRef
 
-    if args.fields:
-        fields = args.fields.split(',')
-    else:
-        fields = ['locations', 'vid', 'vname', 'order']
+    # if args.fields:
+    #     fields = args.fields.split(',')
+    # else:
+    #     fields = ['locations', 'vid', 'vname', 'order']
 
-    term = args.terms[0] if args.terms else None
+    # term = args.terms[0] if args.terms else None
 
     from collections import defaultdict
     deps = defaultdict(set)
@@ -759,34 +754,34 @@ def source_deps(args, l, st, rc):
 
     return
 
-    try:
-        graph, errors = st.dependencies(term)
-    except NotFoundError:
-        fatal("Didn't find source bundle for term: {}".format(term))
-
-    if errors and not args.fields:
-        print "----ERRORS"
-        for name, errors in errors.items():
-            print '=', name
-            for e in errors:
-                print '    ', e
-        print "----"
-
-    identities = []
-
-    return
-
-    for i, level in enumerate(graph):
-        for j, name in enumerate(level):
-            if not name:
-                continue
-
-            ident = l.resolve(name, location=Dataset.LOCATION.SOURCE)
-            if ident:
-                ident.data['order'] = dict(major=i, minor=j)
-                identities.append(ident)
-
-    _print_bundle_list(identities, fields=fields, sort=False)
+    # try:
+    #     graph, errors = st.dependencies(term)
+    # except NotFoundError:
+    #     fatal("Didn't find source bundle for term: {}".format(term))
+    #
+    # if errors and not args.fields:
+    #     print "----ERRORS"
+    #     for name, errors in errors.items():
+    #         print '=', name
+    #         for e in errors:
+    #             print '    ', e
+    #     print "----"
+    #
+    # identities = []
+    #
+    # return
+    #
+    # for i, level in enumerate(graph):
+    #     for j, name in enumerate(level):
+    #         if not name:
+    #             continue
+    #
+    #         ident = l.resolve(name, location=Dataset.LOCATION.SOURCE)
+    #         if ident:
+    #             ident.data['order'] = dict(major=i, minor=j)
+    #             identities.append(ident)
+    #
+    # _print_bundle_list(identities, fields=fields, sort=False)
 
 
 def source_watch(args, l, st, rc):
@@ -844,8 +839,7 @@ def source_buildable(args, l, st, rc):
 
                 buildable.append(v)
 
-        except DependencyError as e:
-
+        except DependencyError:
             pass
         finally:
             bundle.close()
