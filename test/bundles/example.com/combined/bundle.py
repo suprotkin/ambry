@@ -33,8 +33,8 @@ class Bundle(BuildBundle):
 
         # References the dependencies so they get into the metadata. 
         
-        p = self.library.dep('random')
-        p = self.library.dep('simple')
+        self.library.dep('random')
+        self.library.dep('simple')
 
         return True
 

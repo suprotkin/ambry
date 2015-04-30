@@ -45,7 +45,7 @@ class Test(TestBase):
 
         # Other assignment classes
         
-        dnn = 62 * 62 + 11
+        # dnn = 62 * 62 + 11
         
         dn = DatasetNumber(62 ** 3 - 1, None, 'authoritative')
         self.assertEquals('dZZZ', str(dn))
@@ -258,7 +258,7 @@ class Test(TestBase):
         
         # Updating partition names that were partially specified
         
-        pnq = PartitionNameQuery(time='time', space='space', format='hdf')
+        PartitionNameQuery(time='time', space='space', format='hdf')
         # import pprint
         # pprint.pprint(pnq.dict)
 
@@ -509,7 +509,7 @@ class Test(TestBase):
         from ambry.run import get_runconfig
         rc = get_runconfig()
     
-        ng = rc.group('numbers')
+        rc.group('numbers')
 
         # You'll need to run a local service at this address
         host = "numbers"
@@ -632,18 +632,18 @@ class Test(TestBase):
         self.assertEquals('source.com/foobar-orig', ident.source_path)
         self.assertEquals('source.com/foobar-orig-0.0.1.db', ident.cache_key)
 
-        d = {
-            'id': 'd002Bi',
-            'source': 'source',
-            'creator': 'creator',
-            'dataset': 'dataset',
-            'subset': 'subset',
-            'btime': 'time',
-            'bspace': 'space',
-            'variation': 'variation',
-            'revision': 1,
-            'version': '0.0.1'
-        }
+        # d = {
+        #     'id': 'd002Bi',
+        #     'source': 'source',
+        #     'creator': 'creator',
+        #     'dataset': 'dataset',
+        #     'subset': 'subset',
+        #     'btime': 'time',
+        #     'bspace': 'space',
+        #     'variation': 'variation',
+        #     'revision': 1,
+        #     'version': '0.0.1'
+        # }
 
     def test_namequery(self):
         from ambry.identity import PartitionNameQuery

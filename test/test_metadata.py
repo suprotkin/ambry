@@ -312,7 +312,7 @@ group:
 
         self.assertEquals(self.yaml_config.strip(' \n'), t4.dump().strip(' \n'))
 
-        t5 = Top(path=d)
+        Top(path=d)
 
         # Check that load from dir strips out erroneous terms
         # This depends on write_to_dur not checking and stripping these values.

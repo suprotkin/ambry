@@ -348,8 +348,8 @@ class Test(TestBase):
         """Check the the RunConfig expands  the library configuration"""
         from ambry.run import get_runconfig, RunConfig
 
-        rc = get_runconfig(
-            (os.path.join(self.bundle_dir, 'test-run-config.yaml'), RunConfig.USER_CONFIG, RunConfig.USER_ACCOUNTS))
+        rc = get_runconfig((os.path.join(self.bundle_dir, 'test-run-config.yaml'),
+                            RunConfig.USER_CONFIG, RunConfig.USER_ACCOUNTS))
 
         l = rc.library('library1')
 

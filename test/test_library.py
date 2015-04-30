@@ -153,7 +153,7 @@ class Test(TestBase):
         l = self.get_library()
         print "Library: ", l.database.dsn
 
-        r = l.put_bundle(self.bundle)
+        l.put_bundle(self.bundle)
 
         r = l.get(self.bundle.identity.sname)
         self.assertTrue(r is not False)
@@ -164,21 +164,19 @@ class Test(TestBase):
 
         for partition in self.bundle.partitions:
             print "Install and check: ", partition.identity.vname
-            r = l.put_partition(self.bundle, partition)
+            l.put_partition(self.bundle, partition)
 
             # Get the partition with a name
             r = l.get(partition.identity.sname)
             self.assertTrue(r is not False)
-            self.assertEquals(partition.identity.sname,
-                              r.partition.identity.sname)
+            self.assertEquals(partition.identity.sname, r.partition.identity.sname)
             self.assertEquals(self.bundle.identity.sname, r.identity.sname)
 
             # Get the partition with an id
             r = l.get(partition.identity.id_)
 
             self.assertTrue(bool(r))
-            self.assertEquals(partition.identity.sname,
-                              r.partition.identity.sname)
+            self.assertEquals(partition.identity.sname, r.partition.identity.sname)
             self.assertEquals(self.bundle.identity.sname, r.identity.sname)
 
         r = l.get(self.bundle.identity.sname)
@@ -356,7 +354,7 @@ source/dataset-subset-variation-0.0.1/tthree.db:
         '''Install the bundle and partitions, and check that they are
         correctly installed. Check that installation is idempotent'''
 
-        root = self.rc.group('filesystem').root
+        self.rc.group('filesystem').root
 
         l = self.get_library('s3-remoted')
 
@@ -386,7 +384,7 @@ source/dataset-subset-variation-0.0.1/tthree.db:
             self.assertEquals(self.bundle.identity.vname, bp.identity.vname)
             self.assertEquals(p.identity.vname, bp.partition.vname)
 
-            file_ = l.files.query.ref(bp.partition.identity.vid).one
+            l.files.query.ref(bp.partition.identity.vid).one
 
         dataset = l.resolve(p.identity.vid)
 
@@ -496,7 +494,7 @@ source/dataset-subset-variation-0.0.1/tthree.db:
 
         r = Resolver(db.session)
 
-        ref = idnt.id_
+        idnt.id_
 
         ref = "source-dataset-subset-variation-=2.20"
 
@@ -666,7 +664,7 @@ source/dataset-subset-variation-0.0.1/tthree.db:
         l.put_bundle(
             self.bundle)  # Install the partition references in the library.
 
-        b = l.get(self.bundle.identity)
+        l.get(self.bundle.identity)
 
         for partition in self.bundle.partitions:
             l.put_partition(self.bundle, partition)
@@ -685,8 +683,7 @@ source/dataset-subset-variation-0.0.1/tthree.db:
         #
         # Create all possible combinations of partition names
         #
-        s = set()
-        table = self.bundle.schema.tables[0]
+        self.bundle.schema.tables[0]
 
         p = (('time', 'time2'), ('space', 'space3'), ('grain', 'grain4'))
         p += p
@@ -791,14 +788,14 @@ source/dataset-subset-variation-0.0.1/tthree.db:
 
         l.purge()
 
-        fls = l.files
+        l.files
 
         for e in [(str(i), str(j)) for i in range(10) for j in range(3)]:
             f = l.files.new_file(path='path' + e[0], ref="{}-{}".format(*e), group=e[1], type_=e[1])
             l.files.merge(f)
 
-        def refs(itr):
-            return [f.ref for f in i]
+        # def refs(itr):
+        #     return [f.ref for f in i]
 
         print l.files.query.path('path3').first
 

@@ -401,10 +401,7 @@ class Repository(object):
                     if eval(for_):
                         out.append(partition)
             except Exception as e:
-                self.bundle.error(
-                    "Error in evaluting for '{}' : {} ".format(
-                        for_,
-                        e))
+                self.bundle.error("Error in evaluting for '{}' : {} ".format(for_, e))
 
         return out
 

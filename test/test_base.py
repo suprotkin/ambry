@@ -150,13 +150,13 @@ class TestBase(unittest.TestCase):
         for i in range(1, 10):  # @UnusedVariable
             try:
                 # An echo request to see if the server is running. 
-                r = a.get_test_echo('start_server')
+                a.get_test_echo('start_server')
                 break
             except:
                 global_logger.info('Server not started yet, waiting')
                 time.sleep(1)
 
-        r = a.get_test_echo('start_server')
+        a.get_test_echo('start_server')
 
         return config
 

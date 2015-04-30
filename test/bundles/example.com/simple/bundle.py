@@ -54,4 +54,4 @@ class Bundle(BuildBundle):
                 for c in t.columns:
                     if c.datatype in (c.DATATYPE_INTEGER, c.DATATYPE_FLOAT) and c.name != 'id':
                         code_key += 1
-                        cd = c.add_code(code_key, 'code val {}'.format(code_key))
+                        c.add_code(code_key, 'code val {}'.format(code_key))
