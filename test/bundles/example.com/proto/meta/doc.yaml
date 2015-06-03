@@ -5,7 +5,7 @@ documentation:
         # A Bundle that just provides prototype columns for other bundles.
 
 
-        None
+        prototype summary text
 
         '
     processed: ''
@@ -14,5 +14,5 @@ documentation:
 
         None'
     source: ''
-    summary: ''
+    summary: prototype summary text
     title: A Bundle that just provides prototype columns for other bundles.

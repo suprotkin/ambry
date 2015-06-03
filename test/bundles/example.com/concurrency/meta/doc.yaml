@@ -1,6 +1,12 @@
 documentation:
+    footnote: null
     main: ''
+    processed: ''
     readme: '# A Test of Concurency
 
 
         This bundle can run in multiprocessor mode, building many partitions simultaneously.'
+    source: ''
+    summary: This bundle can run in multiprocessor mode, building many partitions
+        simultaneously.
+    title: A Test of Concurency

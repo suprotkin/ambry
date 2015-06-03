@@ -1,12 +1,15 @@
 about:
     access: test
+    footnote: null
     grain: null
     groups: []
     license: null
+    processed: null
     rights: null
+    source: null
     space: San Diego County
     subject: null
-    summary: null
+    summary: Test of geo and time coverage
     tags: []
     time: P2Ye1980
     title: Test of geo and time coverage

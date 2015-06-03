@@ -1,4 +1,5 @@
 documentation:
+    footnote: null
     main: '
 
         # Partition Stats Test
@@ -7,7 +8,11 @@ documentation:
         Tests the statistics generation of the partition finalization
 
         '
+    processed: ''
     readme: '# Partition Stats Test
 
 
         Tests the statistics generation of the partition finalization'
+    source: ''
+    summary: Tests the statistics generation of the partition finalization
+    title: Partition Stats Test

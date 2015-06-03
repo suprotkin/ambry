@@ -167,9 +167,7 @@ class BundleFilesystem(Filesystem):
         try:
             p = os.path.normpath(os.path.join(*args))
         except AttributeError as e:
-            raise ValueError(
-                "Path arguments aren't valid when generating path:" +
-                e.message)
+            raise ValueError("Path arguments aren't valid when generating path: %s" % e.message)
         dir_ = os.path.dirname(p)
         if not os.path.exists(dir_):
             try:

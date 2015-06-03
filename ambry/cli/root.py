@@ -85,13 +85,13 @@ def root_parser(cmd):
     sp.set_defaults(subcommand='sync')
 
 
-def root_command(args, rc):
+def root_command(args, rc, reset_lib=False):
     from ..library import new_library
     from . import global_logger
     from ambry.dbexceptions import DatabaseError
 
     try:
-        l = new_library(rc.library(args.library_name))
+        l = new_library(rc.library(args.library_name), reset=reset_lib)
         l.logger = global_logger
     except DatabaseError as e:
         warn("No library: {}".format(e))

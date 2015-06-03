@@ -1,11 +1,14 @@
 about:
     access: test
+    footnote: null
     grain: null
     groups:
     - group1
     - group2
     license: other-open
+    processed: null
     rights: null
+    source: null
     space: null
     subject: null
     summary: This bundle can run in multiprocessor mode, building many partitions

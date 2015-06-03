@@ -1192,7 +1192,6 @@ class BuildBundle(Bundle):
                     self.log("Installing required package: {}->{}".format(k, v))
                     install(python_dir, k, v)
 
-
         try:
             from ..orm import Dataset
 
@@ -1202,7 +1201,7 @@ class BuildBundle(Bundle):
                 self.fatal(
                     ("Can't build this version. Library {} has version {} of {}"
                      " which is less than or equal this version {}").format(
-                        self.library.database.dsn,b.on.revision,b.fqname,self.identity.on.revision))
+                        self.library.database.dsn, b.on.revision, b.fqname, self.identity.on.revision))
                 return False
 
         except Exception:
@@ -1251,8 +1250,6 @@ class BuildBundle(Bundle):
             self.log("No schema file ('{}') not loading schema".format(sf_path))
 
         cf = self.filesystem.path('meta', self.CODE_FILE)
-
-
 
         if os.path.exists(cf):
             self.log("Loading codes file: {}".format(cf))
@@ -1384,7 +1381,6 @@ class BuildBundle(Bundle):
                 r = False
         else:
             self.log("---- Skipping prepare ---- ")
-
 
         return r
 

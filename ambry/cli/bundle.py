@@ -33,9 +33,7 @@ def bundle_command(args, rc):
 
             if not os.path.exists(bundle_file):
                 # The bundle exists in the source repo, but is not local
-                fatal(
-                    "Ghost bundle {}; in library but not in source tree".format(
-                        ident.vname))
+                fatal("Ghost bundle {}; in library but not in source tree".format(ident.vname))
 
         elif args.bundle_dir == '-':
             # Run run for each line of input
@@ -104,14 +102,14 @@ def bundle_command(args, rc):
         warn('Entering debug mode. Send USR1 signal (kill -USR1 ) to break to interactive prompt')
         debug.listen()
 
-    ##
-    ## Run the phases
-    ##
+    #
+    # Run the phases
+    #
     try:
         for phase in phases:
             r = getf(phase)(args, b, st, rc)
 
-            if r == False:
+            if r is False:
                 break
 
             b.close()
@@ -406,7 +404,6 @@ def bundle_info(args, b, st, rc):
 
                     def bl(k, v):
                         b.log(indent + "{:7s}: {}".format(k, p.record.data.get(v, '')))
-
 
                     b.log(indent + "# Rows : {}".format(p.record.count))
                     bl('g cov', 'geo_coverage')

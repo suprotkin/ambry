@@ -1134,15 +1134,9 @@ class PartitionNumber(ObjectNumber):
         return self.dataset.rev(self.revision)
 
     def __str__(self):
-        return (
-            ObjectNumber.TYPE.PARTITION +
-            self.dataset._ds_str() +
-            ObjectNumber.base62_encode(
-                self.partition).rjust(
-                self.DLEN.PARTITION,
-                '0') +
-            ObjectNumber._rev_str(
-                self.revision))
+        return (ObjectNumber.TYPE.PARTITION + self.dataset._ds_str() +
+                ObjectNumber.base62_encode(self.partition).rjust(self.DLEN.PARTITION, '0') +
+                ObjectNumber._rev_str(self.revision))
 
 
 class LocationRef(object):
@@ -1222,9 +1216,6 @@ class Locations(object):
         return tuple((c for c, v in self._locations.items() if v.code))
 
     def set(self, code, revision=None, version=None):
-
-
-
         uc_code = code.upper()
 
         # In warehouses, there are many other file types that are not

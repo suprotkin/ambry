@@ -1,4 +1,5 @@
 documentation:
+    footnote: null
     main: '
 
         # Geographic test.
@@ -7,7 +8,11 @@ documentation:
         Test of importing shapefiles and copying them with inserters.
 
         '
+    processed: ''
     readme: '# Geographic test.
 
 
         Test of importing shapefiles and copying them with inserters.'
+    source: ''
+    summary: Test of importing shapefiles and copying them with inserters.
+    title: Geographic test.

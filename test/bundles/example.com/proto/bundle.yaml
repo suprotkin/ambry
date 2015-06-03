@@ -1,12 +1,15 @@
 about:
-    access: null
+    access: exmaple
+    footnote: null
     grain: null
     groups: []
     license: null
+    processed: null
     rights: null
+    source: null
     space: null
     subject: null
-    summary: null
+    summary: prototype summary text
     tags: []
     time: null
     title: A Bundle that just provides prototype columns for other bundles.

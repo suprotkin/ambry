@@ -1,4 +1,5 @@
 documentation:
+    footnote: null
     main: "\nDocumentation Example\n--------\n\nThis is an example of docuentatino\
         \ in Mardown, using the Markdown documentation file. \n\n\nTable\n------\n\
         \n<table>\n    <tr><th>One</th><th>Two</th></tr>\n    <tr><td>One</td><td>Two</td></tr>\n\
@@ -111,7 +112,11 @@ documentation:
         \  [Daniel Bogan]:\t\thttp://waferbaby.com/\n  [Jason Perkins]:\t\thttp://pressedpants.com/\n\
         \  [Michel Fortin]:\t\thttp://www.michelf.com/projects/php-markdown/\n  [html2text]:\
         \          http://www.aaronsw.com/2002/html2text/\n \n  [tfmenu]: /graphics/markdown/mt_textformat_menu.png"
+    processed: ''
     readme: '# A Segmented Bundle
 
 
         A bundle with four segments'
+    source: ''
+    summary: A bundle with four segments
+    title: A Segmented Bundle

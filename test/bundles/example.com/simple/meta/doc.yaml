@@ -112,9 +112,11 @@ documentation:
         \  [Daniel Bogan]:\t\thttp://waferbaby.com/\n  [Jason Perkins]:\t\thttp://pressedpants.com/\n\
         \  [Michel Fortin]:\t\thttp://www.michelf.com/projects/php-markdown/\n  [html2text]:\
         \          http://www.aaronsw.com/2002/html2text/\n \n  [tfmenu]: /graphics/markdown/mt_textformat_menu.png"
-    processed: null
+    processed: Packaged for Ambry by Example Com
     readme: '# Simple Example Bundle
 
 
         This is a short summary of the data bundle, from Example Com'
-    source: null
+    source: Example Com
+    summary: This is a short summary of the data bundle, from Example Com
+    title: Simple Example Bundle

@@ -1,13 +1,18 @@
 documentation:
+    footnote: null
     main: '
 
         # Test of geo and time coverage
 
 
-        None
+        Test of geo and time coverage
 
         '
+    processed: ''
     readme: '# Test of geo and time coverage
 
 
         None'
+    source: ''
+    summary: Test of geo and time coverage
+    title: Test of geo and time coverage

@@ -25,10 +25,13 @@ global_logger = None  # Set in main()
 # Name of the evironmental var for the config file.
 AMBRY_CONFIG_ENV_VAR = 'AMBRY_CONFIG'
 
+def fmt(template, *args, **kwargs):
+    return template.format(*args, **kwargs)
 
 def prt(template, *args, **kwargs):
     # global global_logger
-    print(template.format(*args, **kwargs))
+    print(fmt(template, *args, **kwargs))
+    return None
 
 
 def err(template, *args, **kwargs):
@@ -357,7 +360,7 @@ def main(argsv=None, ext_logger=None):
         global_logger = ext_logger
     else:
         name = "{}.{}".format(args.command, args.subcommand)
-        global_logger = get_logger(name,  template="%(levelname)s: %(message)s")
+        global_logger = get_logger(name, template="%(levelname)s: %(message)s")
 
     global_logger.setLevel(logging.INFO)
 

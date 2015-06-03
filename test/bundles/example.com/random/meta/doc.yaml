@@ -1,4 +1,5 @@
 documentation:
+    footnote: null
     main: "\nDownload\n--------\n\n[Markdown 1.0.1][dl] (18 KB) -- 17 Dec 2004\n\n\
         [dl]: http://daringfireball.net/projects/downloads/Markdown_1.0.1.zip\n\n\n\
         Table\n------\n\n<table>\n    <tr><th>One</th><th>Two</th></tr>\n    <tr><td>One</td><td>Two</td></tr>\n\
@@ -11,7 +12,11 @@ documentation:
         \ [Syntax][] page for details pertaining to\nMarkdown's formatting syntax.\
         \ You can try it out, right now, using the\nonline [Dingus][].\n\n  [syntax]:\
         \ /projects/markdown/syntax\n  [dingus]: /projects/markdown/dingus\n"
+    processed: ''
     readme: '# Random Data
 
 
         This is a simple file of random data.'
+    source: ''
+    summary: This is a simple file of random data.
+    title: Random Data
